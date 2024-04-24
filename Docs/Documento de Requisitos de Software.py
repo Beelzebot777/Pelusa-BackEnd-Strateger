@@ -183,6 +183,12 @@ TODO        ¿Existen requisitos específicos de seguridad o cumplimiento normat
                 - Alertas generadas por TradingView.
                 - Alertas generadas por el sistema.                
 ?          ¿Cuáles son los requisitos específicos para los reportes y qué datos deben incluirse?
+                - Los inputs para extraer los reportes deben ser:
+                    - Rango de tiempo.
+                    - Long, Short o ambas.
+                    - Ticker o Tickers.
+                    - Sectores o Indices.
+                    - Tipo de estrategia o sin estrategia.
 
 TODO    Interfaz y Experiencia de Usuario
 TODO        ¿Cuáles son los requisitos iniciales específicos de la interfaz de usuario?
@@ -191,20 +197,17 @@ TODO        ¿Cuáles son los requisitos iniciales específicos de la interfaz d
                         - Ticker.
                         - Temporalidad.
                     - La data para rellenar el grafico de velas se obtendra de la API de BingX, yfinance o Binance.                                    
-                - Se necesita dibujar sobre el grafico de velas.                                                
-TODO        ¿Cómo deben presentarse los datos del mercado para facilitar la toma de decisiones?
-
-
-
-
-
-
-
-
+                - Se necesita dibujar sobre el grafico de velas. (Lineas y texto (labels))
+            Cuales son los requisitos futuros en la interfaz de usuario?
+                - Posibilidad de realizar ordenes, mediante un frame con los inputs necesarios. (Inspirarse en TradingView)
+                - Dibujar o indicar las alertas tanto de tradingView como del propio sistema.
+                - Posibilidad de realizar ordenes basandonos en las alertas.
 TODO        ¿Existen requisitos para la compatibilidad con dispositivos móviles o diferentes navegadores?
+                - El desarrollo responsive sera tratado en un futuro, en la etapa inicial del proyecto lo que se busca es la funcionalidad.
 
 !       Integración y Compatibilidad
 !           ¿Cómo se integrarán los diversos servicios externos y APIs?
+
 !           ¿Existen dependencias externas que necesiten consideración especial, como versiones específicas de APIs o servicios?
 !           ¿Qué protocolos de comunicación se utilizarán para garantizar la compatibilidad entre diferentes servicios y componentes?
 
