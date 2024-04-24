@@ -207,17 +207,53 @@ TODO        ¿Existen requisitos para la compatibilidad con dispositivos móvile
 
 !       Integración y Compatibilidad
 !           ¿Cómo se integrarán los diversos servicios externos y APIs?
-
-!           ¿Existen dependencias externas que necesiten consideración especial, como versiones específicas de APIs o servicios?
+                - Integracion TradingView:
+                    - Weebhook en TradingView.
+                    - Recepcion de datos mediante Puerto 80 o 443 en Flask.
+                - Integracion BingX API:
+                    - Autentificacion
+                    - Envio o Recepcion de datos desde BingX.
+                - Integracion Binance API:
+                    - Envio de datos desde BInance.    
+                - Integracion Yfinance API:
+                    - Envio de datos Yfinance.
 !           ¿Qué protocolos de comunicación se utilizarán para garantizar la compatibilidad entre diferentes servicios y componentes?
-
+                - Se utilizara en su mayoria el protocolo HTTP, utilizando el puerto 80. 
+                - En un futuro se espera utilizar HTTPS, utilizando el puerto 443.
+                
 *       Rendimiento y Escalabilidad
 *           ¿Cuáles son los objetivos específicos de rendimiento para las operaciones de trading en tiempo real?
-*           ¿Cómo se manejará el crecimiento en el volumen de usuarios y transacciones en el tiempo?
+                - Las especificaciones de rendimiento vienen delimitadas por las diferentes APIS.
+                    - BingX:
+                        Grupo de API sobre consulta de datos del Mercado:
+                            - Límite Total de IP: El límite total para todas las interfaces dentro de este grupo es de 100 solicitudes por cada 10 segundos. 
+                            Esto significa que, sumando todas las solicitudes a las diferentes interfaces de este grupo, no deberías exceder las 100 solicitudes en 10 segundos.
+                        Grupo de API de Cuenta, operaciones y consultas sobre cuenta:
+                            - Límite Total de IP: El límite total es de 1000 solicitudes cada 10 segundos para todas las interfaces en este grupo.
+                            - Límite Individual de IP: Cada interfaz tiene un límite individual de 100 solicitudes por cada 10 segundos. 
+                            Es decir, puedes hacer hasta 100 solicitudes a una sola interfaz específica dentro de este grupo, sin exceder el límite total de 1000 solicitudes.
+
+*           ¿Cómo se manejará el crecimiento en el volumen transacciones en el tiempo?
+                - La principal limitacion viene dada por BingX, el exchange que utilizaremos para operar. Las restricciones en tanto a las 
+                transacciones viene dado por: https://bingx-api.github.io/docs/#/en-us/swapV2/base-info.html#Rate%20limit .
 *           ¿Qué estrategias de escalado horizontal o vertical están planificadas?
+                - Inicio con una Instancia de AWS: En la fase inicial, utilizaremos una instancia única de AWS que alojará el FrontEnd, Backend y la Base de Datos. 
+                    Esta configuración simplifica el despliegue inicial y la gestión mientras el tráfico y las cargas son relativamente bajos.
+                Introducción de Docker para Optimización: A medida que el sistema crezca, planeamos implementar Docker para contenerizar y separar las aplicaciones del 
+                    FrontEnd, Backend y la Base de Datos en contenedores individuales. Esto no solo mejorará la gestión y el despliegue de las aplicaciones, sino que 
+                    también optimizará el uso de los recursos dentro de la instancia de AWS. Esta etapa representa una optimización y modularización más que un escalado vertical per se.
+                Escalado Horizontal con Kubernetes: Para manejar un aumento significativo en la carga y las solicitudes, implementaremos Kubernetes para orquestar 
+                    el escalado horizontal de los contenedores. Kubernetes facilitará la adición de más instancias de contenedores distribuidos a través de múltiples 
+                    máquinas (nodos) según sea necesario, asegurando alta disponibilidad y escalabilidad.
 
 ?       Seguridad y Privacidad
 ?           ¿Cuáles son las consideraciones específicas de seguridad para proteger la información financiera y personal de los usuarios?
+                - Inicialmente mientras el proyecto permanezca privado:    
+                    - Medidas de seguridad minimas:
+                        
+                
+                - En un futuro cuando el proyecto sea no solo de uso privado:
+                    - Cumplir regulaciones: GDPR y HIPAA.
 ?           ¿Qué medidas de seguridad y cifrado se implementarán?
 ?           ¿Existen requisitos de cumplimiento normativo relevantes para la región o sector específico, como GDPR o HIPAA?
 
