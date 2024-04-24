@@ -1,9 +1,13 @@
 """
-*   El nombre del proyecto es 'Pelusa'.
-*   'Pelusa' es un proyecto de software.
-*   'Pelusa' es un ayudante, un asistente, una herramienta, orientada en el Trading, desarrollada mediante tecnologias
-*       de programacion, React, Python, Pinescript, TradingView Webooks, BingXApi y BingXData.
-*   'Pelusa' buscaria en un futuro ser un asistente absoluto en el Trading, utilizando tecnologias de IA, deeplearning y bigdata.
+*   El nombre del proyecto es 'Trader @Pelusa'.
+*   'Trader @Pelusa' es un proyecto de software.
+*   'El objetivo de Trader @Pelusa' es suministrar asistencia en linea (2 segundos de delay) al trader.
+*   El desarrollo de 'Trader @Pelusa' contempla el uso de herramientas tales como:
+*       React, Python, Pinescript, TradingView Webooks, BingXApi y BingXData.
+        
+*   'Pelusa' En tanto a espectativas de futuro espera ser un ayudante absoluto en el 
+*        Trading, utilizando tecnologias de IA, deeplearning y bigdata.
+*   'Pelusa' en un futuro podria requerir del uso de otras herramientas y tecnologias.
 
 !Descripcion por temas de pelusa:
     TODO- TradingView.
@@ -109,26 +113,70 @@ Requerimientos No funcionales:
 
 !Escalabilidad y Carga:
 !       ¿Cuántos usuarios esperas atender simultáneamente?
-            Durante el primer año entre 2 y 100.
+            Durante el primer año entre 2.
+            Apartir del segundo año el sistema debe ser capaz de atender a 100 usuarios simultaneamente.
 
 !       ¿Qué volumen de datos se espera manejar, y con qué frecuencia se accederá o actualizará esta información?
-            A bingX cada 1 segundo, para rellenar los datos de mercado. Inicialmente solo accederemos a la grafica de bitcoin. Rellenando graficamente las temporalidades 
-            de 1m, 5m, 15m, 1h, 4h, 1d, 1w, 1m, 1y. Estas buscaran actualizar los datos cada 1 segundo.
-            Luego por el lado de TradingView vamos a tener un webhook que nos enviara alertas de trading. Estas alertas seran procesadas por el backend y enviadas al frontend.
-            Estas alertas seran procesadas en tiempo real.
-        
 
+            -------------------------------------- Volumen de datos del mercado-------------------------------------
+
+            Ejemplo de Estimacion del volumen de datos.            
+            A bingX cada 1 segundo, para rellenar los datos de mercado. Inicialmente solo accederemos a la grafica de bitcoin. 
+            Rellenando graficamente las temporalidades de 1m, 5m, 15m, 30m, 1h, 4h, 1d, 1w, 1m, 1y. 
+            
+            Ejemplo de Volumen de datos con Bitcoin en velas de 1m, en 15 años:
+                - 118 megas en total
+            Ejemplo de Volumen de datos con Bitcoin en velas de 5m, en 15 años:
+                - 23 megas en total
+            Ejemplo de Volumen de datos con Bitcoin en velas de 15m, en 15 años:
+                - 8 megas en total                
+            Ejemplo de Volumen de datos con Bitcoin en velas de 30m, en 15 años:
+                - 4 megas en total
+            Ejemplo de Volumen de datos con Bitcoin en velas de 1h, en 15 años:
+                - 2 megas en total
+            Ejemplo de Volumen de datos con Bitcoin en velas de 4h, en 15 años:
+                - 500 kilos en total
+            Ejemplo de Volumen de datos con Bitcoin en velas de 1d, en 15 años:
+                - 100 kilos en total
+            Ejemplo de Volumen de datos con Bitcoin en velas de 1w, en 15 años:
+                - 20 kilos en total
+            Ejemplo de Volumen de datos con Bitcoin en velas de 1Y, en 15 años:
+                - 4 kilos en total
+            
+            En total tenemos: 160 megas en total.
+            
+            ---------------------------------------- Frecuencia de actualizacion del mercado------------------------------------------------------------
+            Camino de ida:      El frontend - Backend - Bing X.
+            Camino de vuelta:   Bing X - Backend - Frontend.
+                        
+            La frecuencia de actualizacion de los datos sera de 1 segundo, para la vela actual. Desde el backend a bingX.
+            La frecuencia de las velas anteriores a la actual, es de 1 vez por temporalidad. Desde el backend a bingX y desde el backend al frontend.
+                                                        
+
+            Los siguientes volumenes de datos y frecuencias son irrelevantes devido a su tamaño. Despreciables al 10%.
+            - Volumen de datos de las alertas de TradingView
+            - Frecuencia de actualizacion de los datos de alertas de TradingView
+            - Volumen de datos de las Cuentas
+            - Frecuencia de actualizacion de los datos de alertas de TradingView
+                    
 *   Consistencia y Disponibilidad:
 *       ¿Qué nivel de consistencia es necesario para los datos? (por ejemplo, consistencia fuerte, eventual, etc.)
-            Al tratarse de dinero, y de una cuenta de trading, se necesita consistencia fuerte.
-        
-*       ¿Cuáles son los requisitos de disponibilidad y tolerancia a fallos del sistema?
-            Objetivo de disponibilidad del 99.9%. 
+            El objetivo de futuro es conseguir una consistencia fuerte.
+            Inicialmente y al tratarse de un entorno de pruebas, se espera que la consistencia sea eventual.
+                                    
+*       Fallo y Tolerancia a fallos de Trader @Pelusa:
             En tanto a la tolerancia a fallos, el sistema cuenta con una forma manual de operacion, en caso de que el sistema falle. La 
             forma manual de operacion se hace directamente desde la plataforma de BingX. https://bingx.com/. 
             Inicialmente se espera que el sistema falle, por lo que se espera que el sistema sea robusto y tolerante a fallos a medida que se vaya actualizando.
-            La robuztes del sistema se espera se evaluara al final de cada ciclo de desarrollo.
+            La robuztes del sistema se evaluara al final de cada ciclo de desarrollo. 
 
+*       Fallo y Tolerancia a fallos del Servidor:
+            Objetivo de disponibilidad del 99.9%. (24/7/365)
+            Objetivo de tolerancia a fallos del 99.9%. (24/7/365)            
+            Esto se negocia con AWS, el proveedor de servicios en la nube.
+           
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------           
+                
 ?   Interacciones entre servicios:
 ?       ¿El sistema se basará en una arquitectura de microservicios, servicios monolíticos, o una mezcla de ambos?
             Arquitectura de Microservicios. Para una aplicacion de Trading la mejor arquitectura es la de microservicios.
@@ -271,7 +319,19 @@ TODO        ¿Cómo se gestionarán las actualizaciones y parches del sistema?
 *           ¿Cómo y dónde se desplegará el sistema?
 *           ¿Qué procesos se utilizarán para el despliegue continuo y la integración continua?
 *           ¿Cuáles son los planes de recuperación ante desastres y continuidad del negocio?
-       
+
+
+------------------------
+Los pasos a produccion por version  de 1 decimal.
+Cada version deberia corresponder con un prototipo operativo.
+cada prototipo, es operativo cuando:
+- se han escrito los test scripts y se han aceptado
+- Estos se han ejecutado
+- Los script son aceptados y autorizados
+- el procedimento de paso produccion esta escrito y probado
+- se ejecuta el procedimiento de paso a produccion
+quiza lo has hecho pero con el nombre de Go Live
+------------------------       
 
 """
 
