@@ -178,47 +178,51 @@ Requerimientos No funcionales:
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------           
                 
 ?   Interacciones entre servicios:
-?       ¿El sistema se basará en una arquitectura de microservicios, servicios monolíticos, o una mezcla de ambos?
-            Arquitectura de Microservicios. Para una aplicacion de Trading la mejor arquitectura es la de microservicios.
-
+?       ¿El sistema se basará en una arquitectura de microservicios, servicios monolíticos, o una mezcla de ambos?            
+            Arquitectura de microservicios.             
+            [img_1.jpg][img_2.jpg]
         
 ?       ¿Cómo se comunicarán los componentes del sistema entre sí? (sincronía, asincronía, colas de mensajes, etc.)
-            En su mayoria asincronia.
-
-TODO    Seguridad y Compliance:
-TODO        ¿Existen requisitos específicos de seguridad o cumplimiento normativo que deben ser considerados en la arquitectura?
-                Durante la etapa inical de desarrollo no se considera necesario cumplir con normativas de seguridad.
-                Sin embargo se deben estudiar las problematicas de tener el puerto 80 abierto, y como se puede mitigar los riesgos de seguridad.
-        
+            * IMPORANTE CONVERSARLO CON EL EQUIPO DE DESARROLLO. 
+            No centralizado.
+            Asincrono en su mayoria, a buscar la escalabilidad. Buscando el no bloqueo de usuarios. Ni saturacion de recursos.
+            Flask no permite la comunicacion, asincrona, pero al optar por una arquitectura de microservicios, se podria optar por una comunicacion asincrona.
+            Inicialmente esto no deberia ser un problema, ya que el volumen de datos es bajo. Aun asi esto es una suposicion y se debe estudiar.
+            Ya que por ejemplo al momento de cargar los datos de mercado, el sistema podria quedarse colgado o tardar en cargar.
+            Kafka es una opcion para la comunicacion asincrona, pero no se contempla su uso en la etapa inicial del proyecto.
+            
 !       Infraestructura y Entorno de despliegue:
 !           ¿Dónde se alojará el backend (en la nube, en servidores locales, híbrido)?
                 En la nube, en AWS.
 !           ¿Qué tecnologías y herramientas de infraestructura ya están en uso o se planifican utilizar?
-                No se ha definido.
+                En un futuro se espera utilizar Docker y Kubernetes.
 
 *      Usuarios y Roles
 *          ¿Quiénes son los usuarios finales del sistema?
-                El software es de uso personal o privado. 
+                Inicialmente el software es de uso personal o privado. 
+                En un futuro se espera que el software sea de uso publico.
 *          ¿Qué roles específicos existirán dentro del sistema? Por ejemplo, administradores, traders regulares, analistas, etc.
-                Solo un rol, el de usuario final.
+                Dos roles:
+                - Administrador.
+                - Usuario Final.
 *          ¿Cuáles son las capacidades y restricciones de cada rol?
-                El usuario final podra:
+                Ambos roles podran:
                 - ver la informacion de mercado.
                 - dibujar sobre los graficos.
                 - operar, 
-                - ver el estado de las cuentas y operaciones.
+                - ver el estado de las cuentas y operaciones en el entorno de BingX.
                 - ver los reportes generados por el sistema. 
-                - Crear, modificar y recibir alertas de trading.
+                - Crear, modificar y recibir alertas de trading tanto de TradingView como del propio sistema.
 
 ?       Funcionalidades Detalladas
-?          ¿Qué funcionalidades específicas para los usuarios en cada operación de trading?
+?          ¿Qué funcionalidades específicas tendran los usuarios en cada operación de trading?
                 - Abrir, Modificar, Cancelar ordenes en BingX.
-?          ¿Cuáles son los requisitos para operar en BingX?
-                - Para abrir una operacion se necesita:
-                    - El Ticker del mercado.
-                    - El tipo de operacion (Long o Short).
-                    - El Apalancamiento.
-                    - El tamaño de la operacion (cantidad de dinero a invertir [Margen]).
+?          ¿Cuáles son los requisitos para operar en BingX, desde el punto de vista del Sistema?
+                - Para abrir una operacion se necesita:                    
+                    - El Ticker del mercado. Por ejemplo BTCUSDT.
+                    - El tipo de operacion. Por ejemplo Long o Short.
+                    - El Apalancamiento. Por ejemplo 10x, 5x.
+                    - El tamaño de la operacion (cantidad de dinero a invertir [Margen]). Por ejemplo 100 dolares en la operacion.
                     - Opcionales:
                         - Stop Loss.
                         - Take Profit.
@@ -227,9 +231,13 @@ TODO        ¿Existen requisitos específicos de seguridad o cumplimiento normat
                 - Para modificar una operacion se necesita:
                     - El ID de la operacion.                                        
                     - Nuevo Stop Loss y/o Nuevo Take Profit.                    
-?          ¿Cómo deben gestionarse las notificaciones y alertas dentro de la aplicación?
-                - Alertas generadas por TradingView.
-                - Alertas generadas por el sistema.                
+            
+?          Definicion del tipo de alertas y su gestion:
+                - Alertas de TradingView:
+                    - Es un String con informacio, se recive por el lado servidor y se procesa.
+                - Alertas de Trader @Pelusa:
+                    - Generacion de una alerta mediante condiciones. Esta alerta al igual que la de TradingView tendra el mismo formato.
+                                                                           
 ?          ¿Cuáles son los requisitos específicos para los reportes y qué datos deben incluirse?
                 - Los inputs para extraer los reportes deben ser:
                     - Rango de tiempo.
@@ -246,18 +254,20 @@ TODO        ¿Cuáles son los requisitos iniciales específicos de la interfaz d
                         - Temporalidad.
                     - La data para rellenar el grafico de velas se obtendra de la API de BingX, yfinance o Binance.                                    
                 - Se necesita dibujar sobre el grafico de velas. (Lineas y texto (labels))
+                - Visualizar Indicadores, como por ejemplo estoicasticos, RSI, Squeeze Momentum Indicator, etc.
             Cuales son los requisitos futuros en la interfaz de usuario?
                 - Posibilidad de realizar ordenes, mediante un frame con los inputs necesarios. (Inspirarse en TradingView)
                 - Dibujar o indicar las alertas tanto de tradingView como del propio sistema.
                 - Posibilidad de realizar ordenes basandonos en las alertas.
 TODO        ¿Existen requisitos para la compatibilidad con dispositivos móviles o diferentes navegadores?
                 - El desarrollo responsive sera tratado en un futuro, en la etapa inicial del proyecto lo que se busca es la funcionalidad.
-
+                - Se utilizara Tailwind desde el principio para facilitar el desarrollo responsive en un futuro.
+                
 !       Integración y Compatibilidad
 !           ¿Cómo se integrarán los diversos servicios externos y APIs?
                 - Integracion TradingView:
                     - Weebhook en TradingView.
-                    - Recepcion de datos mediante Puerto 80 o 443 en Flask.
+                    - Recepcion de datos mediante Puerto 80 , 443 en Flask en el lado del servidor.
                 - Integracion BingX API:
                     - Autentificacion
                     - Envio o Recepcion de datos desde BingX.
@@ -294,32 +304,54 @@ TODO        ¿Existen requisitos para la compatibilidad con dispositivos móvile
                     el escalado horizontal de los contenedores. Kubernetes facilitará la adición de más instancias de contenedores distribuidos a través de múltiples 
                     máquinas (nodos) según sea necesario, asegurando alta disponibilidad y escalabilidad.
 
+TODO    Seguridad y Compliance:
+TODO        ¿Existen requisitos específicos de seguridad o cumplimiento normativo que deben ser considerados en la arquitectura?
+                Durante la etapa inical de desarrollo no se considera necesario cumplir con normativas de seguridad.
+                Sin embargo se deben estudiar las problematicas de tener el puerto 80 abierto, y como se puede mitigar los riesgos de seguridad.
+                En tanto al webhook de TradingView y su escucha en Flask, es posible limitar las direcciones IP autorizadas para recibir las alertas.                
+                * En un futuro, al finalizar cada prototipo se dedicara un tiempo a estudiar las problematicas de seguridad y como mitigarlas.
+        
+
 ?       Seguridad y Privacidad
 ?           ¿Cuáles son las consideraciones específicas de seguridad para proteger la información financiera y personal de los usuarios?
                 - Inicialmente mientras el proyecto permanezca privado:    
                     - Medidas de seguridad minimas:
-                        
-                
+                        - Restringir por IP el acceso al entorno de desarrollo AWS.
+                        - Restringir por IP el acceso al sistema Trader @Pelusa.
+                                        
                 - En un futuro cuando el proyecto sea no solo de uso privado:
                     - Cumplir regulaciones: GDPR y HIPAA.
 ?           ¿Qué medidas de seguridad y cifrado se implementarán?
-?           ¿Existen requisitos de cumplimiento normativo relevantes para la región o sector específico, como GDPR o HIPAA?
+                - Cifrado basico de HTTPS.
 
 TODO    Mantenimiento y Soporte
 TODO        ¿Cómo se realizará el mantenimiento del sistema?
+                Inicialmente el mantenimiento se realizara de forma manual.
+                En un Futuro se espera que el mantenimiento sea automatico.
 TODO        ¿Qué niveles de soporte técnico se ofrecerán a los usuarios?
+                Durante el primer año ninguno.
+                Durante el segundo año, ya veremos...
 TODO        ¿Cómo se gestionarán las actualizaciones y parches del sistema?
+                Por partes y por piezas.
+
+?       Documentación y Registro.
+            Mediante Logs, en una base de datos especifica.
 
 !       Pruebas
 !           ¿Qué estrategias de pruebas se implementarán para asegurar la funcionalidad y la fiabilidad del sistema?
+                Pruebas unitarias y pruebas integrales por prototipo finalizado. Con sus correspondientes control de versiones.
 !           ¿Cómo se validarán las integraciones con servicios externos?
+                Mediante pruebas de integracion.
 !           ¿Cuáles son los criterios para las pruebas de aceptación del usuario?
+                Para las pruebas de aceptacion del usuario, se considerara la utilizacion del o los manuales de uso del o las herramientas disponibles para el usuario.
 
 *       Despliegue y Operaciones
 *           ¿Cómo y dónde se desplegará el sistema?
+                Por Partes y por piezas, en la nube de AWS.
 *           ¿Qué procesos se utilizarán para el despliegue continuo y la integración continua?
+                Github.
 *           ¿Cuáles son los planes de recuperación ante desastres y continuidad del negocio?
-
+                Github.
 
 ------------------------
 Los pasos a produccion por version  de 1 decimal.
