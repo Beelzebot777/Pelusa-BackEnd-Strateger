@@ -3,9 +3,9 @@ import requests
 import hmac
 from hashlib import sha256
 
-APIURL = "https://open-api.bingx.com"
-APIKEY = "xYSF77x4hjrLvJxdTfbZCfgP2wLnaL0aETXAajLth7MSKBkFI3HesHqIVTZcpeIspJ5Fsm2S9sU8ok360tjCQ"
-SECRETKEY = "wDmTupwxFfVqP5E1FG9oZU1KmhX8JsUMxzSB4fIOnSrvRUnFMV11XRrEOPNgIkdieLFQZ9p7a83uEkhGWVw"
+APIURL = "https://open-api.bingx.com"       
+APIKEY = "xYSF77x4hjrLvJxdTfbZCfgP2wLnaL0aETXAajLth7MSKBkFI3HesHqIVTZcpeIspJ5Fsm2S9sU8ok360tjCQ"    #Deberian estar como variables de entorno
+SECRETKEY = "wDmTupwxFfVqP5E1FG9oZU1KmhX8JsUMxzSB4fIOnSrvRUnFMV11XRrEOPNgIkdieLFQZ9p7a83uEkhGWVw"   #Deberian estar como variables de entorno
 
 
 def demo():
