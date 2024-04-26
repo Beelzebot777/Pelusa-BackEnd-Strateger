@@ -1,115 +1,6 @@
 """
-*   El nombre del proyecto es 'Trader @Pelusa'.
-*   'Trader @Pelusa' es un proyecto de software.
-*   'El objetivo de Trader @Pelusa' es suministrar asistencia en linea (2 segundos de delay) al trader.
-*   El desarrollo de 'Trader @Pelusa' contempla el uso de herramientas tales como:
-*       React, Python, Pinescript, TradingView Webooks, BingXApi y BingXData.
-        
-*   'Pelusa' En tanto a espectativas de futuro espera ser un ayudante absoluto en el 
-*        Trading, utilizando tecnologias de IA, deeplearning y bigdata.
-*   'Pelusa' en un futuro podria requerir del uso de otras herramientas y tecnologias.
-
-!Descripcion por temas de pelusa:
-    TODO- TradingView.
-        ?- Webhook.
-            *- Solo disponible el puerto 80 y 443.
-        
-        *- Trading.
-            *- Pinescript.
-                *- Estrategias.
-                ?- Alertas para las estrategias hechas con pinescript.
-            *- Gestionador de Alertas de TradingView.
-        *- Datos.                        
-            ?- Reportes.
-            ?- Mediante Scraping.     
-                              
-    TODO- Backend 
-        ?- Entorno de desarrollo:
-            - Flask (Python)
-            
-        !- Base de Datos MySQL
-            - Datos de mercado
-            - Datos de cuentas                        
-                - Datos de Trading
-                - Datos Operaciones
-                 
-        ?- Comunicacion API's
-            *- BingX
-            *- Binance
-            *- Yahoo
-            *- TradingView
-                        
-        ?- Puerto 80 Webhook
-            - Recibir Alertas de TradingView.
-            - Procesa las Alertas recibidas.            
-            - Enviar Alertas_Procesadas a Frontend.
-    
-        ?- Puerto 5000        
-            TODO - Frontend      
-              
-        ?- Reportes.    
-                            
-    TODO - API
-        *- BingX 
-            *- Informacion de mercado
-            *- Informacion de Trading  
-                *- Estado Actual Operaciones.
-            *- Trading                    
-                *- Operar Futuros 'Perpetual Futures':                        
-                    *- Abrir Orden:                   
-                    *- Modificar Orden
-                    *- Cancelar Orden
-                    *- Cancelar Todas las Ordenes                                                                                                            
-            *- Estado Actual Cuentas:
-                *- Futuros                        
-                *- Spot                                  
-        *- Binance
-            *- Informacion de mercado
-        *- Yahoo
-            *- Informacion de mercado       
-        *- TradingView
-            *- Webhook - Alertas
-            *- ????????????????
-    
-    TODO- Frontend
-        ?- Entorno de desarrollo:
-            - React Stockchars - https://rrag.github.io/react-stockcharts/ - Para la visualizacion de graficos de velas.
-            - yfinance - https://pypi.org/project/yfinance/ - Para la obtencion de datos de mercado.
-            - React
-            - HTML
-            - CSS
-            - JavaScript
-            - TailwindCSS - https://tailwindcss.com/docs/guides/create-react-app - Para la implementacion con React
-            - Mas tecnologias de Frontend.              
-"""
-
-
-"""
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 # Software Requirements Document
-
-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-
-Requerimientos Funcionales:    
-    - Visualizar graficos como en TradingView.
-    - Recibir alertas de TradingView.
-    - Procesar alertas de TradingView.
-    - Enviar alertas procesadas a Frontend.
-    - Abrir, Modificar, Cancelar Ordenes de Trading.
-    - Cancelar todas las ordenes de Trading.
-    - Ver estado actual de las cuentas de Trading.    
-    - Ver estado actual de las operaciones de Trading.
-    - Ver informacion de mercado.
-    - Generacion de Reportes.    
-
-Requerimientos No funcionales:
-    - Seleccionar un patrones de diseño de software.
-    - Buen codigo.
-    - Buena estructura de carpetas.
-    - Codigo que se entienda por si solo y que sea facil de entender por otro programador.
-    - Modularidad.
-    - A ser posible escalabilidad.    
-        
-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 !Escalabilidad y Carga:
 !       ¿Cuántos usuarios esperas atender simultáneamente?
@@ -349,22 +240,32 @@ TODO        ¿Cómo se gestionarán las actualizaciones y parches del sistema?
 *           ¿Cómo y dónde se desplegará el sistema?
                 Por Partes y por piezas, en la nube de AWS.
 *           ¿Qué procesos se utilizarán para el despliegue continuo y la integración continua?
-                Github.
-*           ¿Cuáles son los planes de recuperación ante desastres y continuidad del negocio?
-                Github.
+                Manual.
+*           ¿Cuáles son los planes de recuperación ante desastres?
+                Repositorio Github.
+                Backups manuales.
+                        
+TODO    Organización y Colaboración
+TODO        ¿Qué herramientas de gestión de proyectos y colaboración se utilizarán?
+                Github Project para organizar, priorizar y rastrear el progreso del trabajo.
+                Github Issues para gestionar tareas, cambios, problemas y errores.
+                Github Wiki para documentar y compartir información relevante.
+                A medida que se desarrolle la aplicacion se planteara Github Actions para automatizar tareas y flujos de trabajo.                
 
-------------------------
-Los pasos a produccion por version  de 1 decimal.
-Cada version deberia corresponder con un prototipo operativo.
-cada prototipo, es operativo cuando:
-- se han escrito los test scripts y se han aceptado
-- Estos se han ejecutado
-- Los script son aceptados y autorizados
-- el procedimento de paso produccion esta escrito y probado
-- se ejecuta el procedimiento de paso a produccion
-quiza lo has hecho pero con el nombre de Go Live
-------------------------       
+            Repositorios:
+                - Un repositorio para el backend.
+                - Un repositorio para el frontend.
+
+!Paso a produccion:
+    Los pasos a produccion por version  de 1 decimal.
+    Cada version deberia corresponder con un prototipo operativo.
+    cada prototipo, es operativo cuando:
+    - se han escrito los test scripts y se han aceptado
+    - Estos se han ejecutado
+    - Los script son aceptados y autorizados
+    - el procedimento de paso produccion esta escrito y probado
+    - se ejecuta el procedimiento de paso a produccion
+    quiza lo has hecho pero con el nombre de Go Live
+    
 
 """
-
-
