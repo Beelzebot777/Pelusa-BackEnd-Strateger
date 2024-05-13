@@ -3,22 +3,24 @@ import requests
 import hmac
 from hashlib import sha256
 
+
+
 APIURL = "https://open-api.bingx.com"       
 APIKEY = "xYSF77x4hjrLvJxdTfbZCfgP2wLnaL0aETXAajLth7MSKBkFI3HesHqIVTZcpeIspJ5Fsm2S9sU8ok360tjCQ"    #Deberian estar como variables de entorno
 SECRETKEY = "wDmTupwxFfVqP5E1FG9oZU1KmhX8JsUMxzSB4fIOnSrvRUnFMV11XRrEOPNgIkdieLFQZ9p7a83uEkhGWVw"   #Deberian estar como variables de entorno
 
 
-def demo():
+def make_order():
     payload = {}
     path = '/openApi/swap/v2/trade/order'
     method = "POST"
     paramsMap = {
-    "symbol": "BTC-USDT",
-    "side": "BUY",
-    "positionSide": "LONG",
-    "type": "MARKET",
-    "quantity": 0.0002    
-}
+        "leverage": "5",
+        "symbol": "BTC-USDT",
+        "side": "BUY",
+        "positionSide": "LONG",
+        "type": "MARKET",
+        "quantity": 0.0002 }
     paramsStr = parseParam(paramsMap)
     return send_request(method, path, paramsStr, payload)
 
@@ -47,4 +49,4 @@ def parseParam(paramsMap):
 
 
 if __name__ == '__main__':
-    print("demo:", demo())
+    print("demo:", make_order())
