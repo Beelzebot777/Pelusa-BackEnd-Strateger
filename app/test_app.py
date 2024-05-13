@@ -2,18 +2,19 @@ import unittest
 from flask import Flask, request, jsonify
 from datetime import datetime
 import json
+import sqlite3
 
 # Suponiendo que tu aplicación está en app.py, importa tu app aquí
-from app import app, extract_variables
+from app import app, extract_variables, init_db
 
 class WebhookTestCase(unittest.TestCase):
 
     def setUp(self):
         self.app = app.test_client()
         self.app.testing = True
+        init_db()  # Initialize the database
 
     def test_webhook_json(self):
-        # Datos de prueba en formato JSON
         test_data = {
             "Ticker": "BTCUSD",
             "Temporalidad": "1",
@@ -29,7 +30,7 @@ class WebhookTestCase(unittest.TestCase):
         self.assertEqual(data['Temporalidad'], "1")
         self.assertEqual(data['Exit Price Alert'], "62720.62")
         self.assertEqual(data['Order'], "Close Long")
-        self.assertEqual(data['Strategy'], "Stochastic_v1")   
+        self.assertEqual(data['Strategy'], "Stochastic_v1")
 
     def test_extract_variables_valid(self):
         test_data = '''{

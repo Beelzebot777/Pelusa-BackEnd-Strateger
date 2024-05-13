@@ -1,23 +1,38 @@
 from flask import Flask, request, jsonify
 from datetime import datetime
 import json
+import sqlite3
 
 app = Flask(__name__)
 
+def init_db():
+    conn = sqlite3.connect('logging.db')
+    c = conn.cursor()
+    c.execute('''
+        CREATE TABLE IF NOT EXISTS tbl_logging (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            ticker TEXT,
+            temporalidad TEXT,
+            quantity TEXT,
+            entry_price_alert TEXT,
+            exit_price_alert TEXT,
+            time_alert TEXT,
+            orden TEXT,
+            strategy TEXT,
+            raw_data TEXT
+        )
+    ''')
+    conn.commit()
+    conn.close()
+
+init_db()
+
 def extract_variables(data):
-    """
-    Función para extraer variables de los datos JSON.
-    :param data: Datos JSON
-    :return: Diccionario con las variables extraídas
-    """
     try:
-        # Intenta parsear los datos como JSON
         parsed_data = json.loads(data)
     except json.JSONDecodeError:
-        # Retorna None si los datos no son JSON
         return None
 
-    # Convertir 'Time Alert' a un objeto datetime
     if 'Time Alert' in parsed_data:
         time_str = parsed_data['Time Alert'].replace('_', ' ')
         try:
@@ -26,7 +41,6 @@ def extract_variables(data):
             print(f"Error al convertir el tiempo: {e}")
             return None
 
-    # Extraer las variables
     variables = {
         'Ticker': parsed_data.get('Ticker'),
         'Temporalidad': parsed_data.get('Temporalidad'),
@@ -40,39 +54,74 @@ def extract_variables(data):
 
     return variables
 
+def save_to_db(variables, raw_data):
+    conn = sqlite3.connect('logging.db')
+    c = conn.cursor()
+    c.execute('''
+        INSERT INTO tbl_logging (
+            ticker, temporalidad, quantity, entry_price_alert, exit_price_alert, 
+            time_alert, orden, strategy, raw_data
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+    ''', (
+        variables.get('Ticker'), variables.get('Temporalidad'), variables.get('Quantity'), 
+        variables.get('Entry Price Alert'), variables.get('Exit Price Alert'), 
+        variables.get('Time Alert'), variables.get('Order'), variables.get('Strategy'), 
+        raw_data
+    ))
+    conn.commit()
+    conn.close()
+
 @app.route('/webhook', methods=['POST'])
 def webhook():
     try:
-        # Intenta parsear el contenido como JSON
         data = request.get_json(force=True)
         print("Datos recibidos como JSON:")
         print(data)
     except:
         return "Error: Datos no válidos", 400
 
-    # Procesar la información recibida
     result = procesar(data)
-    
-    # Retornar el resultado del parseo
     return jsonify(result), 200
 
 def procesar(data):
-    # Ejecutar extract_variables y obtener las variables
     variables = extract_variables(json.dumps(data))
     if not variables:
         return "Error: Datos no válidos o falta de variables"
 
-    # Imprimir las variables por separado
     print("Variables extraídas:")
     for key, value in variables.items():
         print(f"{key}: {value}")
 
-    # Convertir 'Time Alert' de vuelta a una cadena antes de retornar
     if 'Time Alert' in variables and isinstance(variables['Time Alert'], datetime):
         variables['Time Alert'] = variables['Time Alert'].strftime('%H:%M:%S %d/%m/%Y')
     
-    # Puedes realizar más procesamiento aquí si es necesario
+    save_to_db(variables, json.dumps(data))
     return variables
+
+@app.route('/logs', methods=['GET'])
+def view_logs():
+    conn = sqlite3.connect('logging.db')
+    c = conn.cursor()
+    c.execute('SELECT * FROM tbl_logging')
+    rows = c.fetchall()
+    conn.close()
+    
+    logs = []
+    for row in rows:
+        logs.append({
+            'id': row[0],
+            'ticker': row[1],
+            'temporalidad': row[2],
+            'quantity': row[3],
+            'entry_price_alert': row[4],
+            'exit_price_alert': row[5],
+            'time_alert': row[6],
+            'orden': row[7],
+            'strategy': row[8],
+            'raw_data': row[9]
+        })
+    
+    return jsonify(logs)
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=80)
