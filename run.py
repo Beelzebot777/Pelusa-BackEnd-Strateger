@@ -1,16 +1,6 @@
-from flask import Flask, request
+from app import create_app
 
-app = Flask(__name__)
-
-@app.route('/webhook', methods=['POST'])
-def webhook():
-    data = request.json
-    print("Alerta recibida:", data)
-    # Aquí puedes agregar lógica para manejar la alerta
-    return "Alerta recibida", 200
+app = create_app()
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=443)
-    
-# Useradmin
-# @HuaweiHgw
+    app.run(host='0.0.0.0', port=80)
