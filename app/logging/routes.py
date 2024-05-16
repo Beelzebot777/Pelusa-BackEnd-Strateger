@@ -4,9 +4,9 @@ import sqlite3
 
 @logging.route('/get_alarms', methods=['GET'])
 def view_logs():
-    conn = sqlite3.connect('logging.db')
+    conn = sqlite3.connect('logs.db')
     c = conn.cursor()
-    c.execute('SELECT * FROM tbl_logging')
+    c.execute('SELECT * FROM tbl_alarms')
     rows = c.fetchall()
     conn.close()
     
