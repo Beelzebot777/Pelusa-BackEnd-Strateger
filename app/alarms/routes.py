@@ -51,20 +51,20 @@ def crear_operacion(variables):
     
     #Lo primero que deberia hacer esta funcion es checkear la variable['Strategy'] y actuar en consecuencia
     
-    if variables['Type'] == 'Open Long':
+    if variables['Order'] == 'Open Long':
         result = make_order("5", "BTC-USDT", "BUY", "LONG", "MARKET", variables['Quantity'])
         data = extract_order_variables(result)
         save_order_logs(data)
         enviar_data(data, 'https://beelzebot.com/webhook')
-    if variables['Type'] == 'Open Short':
+    if variables['Order'] == 'Open Short':
         result = make_order("5", "BTC-USDT", "SELL", "SHORT", "MARKET", variables['Quantity'])        
         data = extract_order_variables(result)
         save_order_logs(data)
         enviar_data(data, 'https://beelzebot.com/webhook')
-    if variables['Type'] == 'Close Long':        
+    if variables['Order'] == 'Close Long':        
         result = close_all_positions("BTC-USDT")                
         enviar_data(result, 'https://beelzebot.com/webhook')
-    if variables['Type'] == 'Close Short':        
+    if variables['Order'] == 'Close Short':        
         result = close_all_positions("BTC-USDT")
         enviar_data(result, 'https://beelzebot.com/webhook')
         
