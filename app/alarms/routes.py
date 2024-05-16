@@ -1,10 +1,17 @@
 from flask import request, jsonify
 from app.alarms import alarms
-from app.alarms.util import extract_variables
+from app.alarms.util import extract_variables       #Cambiar nombre a extract_variables
+from app.bingx.util import extract_order_variables
+
 from app.logging.models import save_alarm_logs
+from app.logging.models import save_order_logs
+
 import sqlite3
 from datetime import datetime
 import requests
+
+
+from app.bingx.api import make_order, close_all_positions
 
 
 @alarms.route('/webhook', methods=['POST'])
@@ -34,9 +41,36 @@ def procesar(data):
     
     save_alarm_logs(variables, data)
         
-    enviar_data(data, 'https://beelzebot.com/webhook')    
+    enviar_data(data, 'https://beelzebot.com/webhook')   
+    
+    crear_operacion(variables)
     
     return variables
+
+def crear_operacion(variables):
+    
+    #Lo primero que deberia hacer esta funcion es checkear la variable['Strategy'] y actuar en consecuencia
+    
+    if variables['Type'] == 'Open Long':
+        result = make_order("5", "BTC-USDT", "BUY", "LONG", "MARKET", variables['Quantity'])
+        data = extract_order_variables(result)
+        save_order_logs(data)
+        enviar_data(data, 'https://beelzebot.com/webhook')
+    if variables['Type'] == 'Open Short':
+        result = make_order("5", "BTC-USDT", "SELL", "SHORT", "MARKET", variables['Quantity'])        
+        data = extract_order_variables(result)
+        save_order_logs(data)
+        enviar_data(data, 'https://beelzebot.com/webhook')
+    if variables['Type'] == 'Close Long':        
+        result = close_all_positions("BTC-USDT")                
+        enviar_data(result, 'https://beelzebot.com/webhook')
+    if variables['Type'] == 'Close Short':        
+        result = close_all_positions("BTC-USDT")
+        enviar_data(result, 'https://beelzebot.com/webhook')
+        
+        
+        
+    
 
 def enviar_data(data, webhook_url):
     headers = {
