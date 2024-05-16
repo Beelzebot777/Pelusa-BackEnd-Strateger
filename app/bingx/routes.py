@@ -41,17 +41,6 @@ def close_all():
     result = close_all_positions(symbol)
     print("----------------------------------------------------------------------------------------------------")
     print(result)
-    print("----------------------------------------------------------------------------------------------------")
-    
-    variables = extract_order_variables(result)
-    
-    if not variables:
-        return {"error": "Datos no válidos o falta de variables"}
-
-    print("Variables extraídas:")
-    for key, value in variables.items():
-        print(f"{key}: {value}")
-    
-    save_order_logs(variables)
+    print("----------------------------------------------------------------------------------------------------")       
     
     return jsonify({"status": "all positions closed", "result": result})
