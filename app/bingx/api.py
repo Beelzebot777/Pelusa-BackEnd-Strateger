@@ -12,17 +12,37 @@ APIURL = os.getenv("APIURL")
 APIKEY = os.getenv("APIKEY")
 SECRETKEY = os.getenv("SECRETKEY")
 
-def make_order():
+
+def make_order(leverage, symbol, side, positionSide, order_type, quantity):
     payload = {}
     path = '/openApi/swap/v2/trade/order'
     method = "POST"
+    #paramsMap = {
+    #    "leverage": "5",
+    #    "symbol": "BTC-USDT",
+    #    "side": "BUY",
+    #    "positionSide": "LONG",
+    #    "type": "MARKET",
+    #    "quantity": 0.0002 
+    #}
     paramsMap = {
-        "leverage": "5",
-        "symbol": "BTC-USDT",
-        "side": "BUY",
-        "positionSide": "LONG",
-        "type": "MARKET",
-        "quantity": 0.0002 
+        "leverage": leverage,
+        "symbol": symbol,
+        "side": side,
+        "positionSide": positionSide,
+        "type": order_type,
+        "quantity": quantity
+    }
+    paramsStr = parse_param(paramsMap)
+    return send_request(method, path, paramsStr, payload)
+
+def close_all_positions(symbol):
+    payload = {}
+    path = '/openApi/swap/v2/trade/closeAllPositions'
+    method = "POST"
+    paramsMap = {
+        "symbol": symbol,
+        "timestamp": str(int(time.time() * 1000))
     }
     paramsStr = parse_param(paramsMap)
     return send_request(method, path, paramsStr, payload)
