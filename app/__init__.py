@@ -4,6 +4,7 @@ from app.main import main
 from app.alarms import alarms 
 from app.bingx import bingx 
 from app.logging import logging
+from app.strateger import strateger
 
 from app.logging.models import init_db_logs_tbl_alarms, init_db_logs_tbl_trades
 
@@ -20,5 +21,6 @@ def create_app():
     app.register_blueprint(alarms, url_prefix='/alarms')
     app.register_blueprint(bingx, url_prefix='/bingx')
     app.register_blueprint(logging, url_prefix='/logs')
+    app.register_blueprint(strateger, url_prefix='/strateger')
 
     return app
