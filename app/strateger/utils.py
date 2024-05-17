@@ -13,7 +13,6 @@ def crear_operacion(variables):
     print("------------------------------------------------------------")
     print("Creando operación...")
     print(f"variables['Order']: {variables['Order']}")
-    print(f"variables['Quantity']: {variables['Quantity']}")
     
     if order == 'open long':
         print("Abriendo posición Long...")
