@@ -17,20 +17,24 @@ def crear_operacion(variables):
     if order == 'open long':
         print("Abriendo posición Long...")
         result = make_order("50", "BTC-USDT", "BUY", "LONG", "MARKET", "0.0002")
+        print(f"Resultado de la orden: {result}")
         data = extract_order_variables(result)
         save_order_logs(data)
         enviar_data(data, 'https://beelzebot.com/webhook')
     if order == 'open short':
         print("Abriendo posición Short...")
         result = make_order("50", "BTC-USDT", "SELL", "SHORT", "MARKET", "0.0002")        
+        print(f"Resultado de la orden: {result}")
         data = extract_order_variables(result)
         save_order_logs(data)
         enviar_data(data, 'https://beelzebot.com/webhook')
     if order == 'close long':        
         print("Cerrando posiciónes en Long...")
-        result = close_all_positions("BTC-USDT")                
+        result = close_all_positions("BTC-USDT")
         enviar_data(result, 'https://beelzebot.com/webhook')
     if order == 'close short':       
         print("Cerrando posiciónes en Short...") 
         result = close_all_positions("BTC-USDT")
+        data = extract_order_variables(result)
+        save_order_logs(data)
         enviar_data(result, 'https://beelzebot.com/webhook')
