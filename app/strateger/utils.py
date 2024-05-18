@@ -31,10 +31,12 @@ def crear_operacion(variables):
     if order == 'close long':        
         print("Cerrando posiciónes en Long...")
         result = close_all_positions("BTC-USDT")
+        print(f"Resultado de cerrar todas las posiciones: {result}")
         enviar_data(result, 'https://beelzebot.com/webhook')
     if order == 'close short':       
         print("Cerrando posiciónes en Short...") 
         result = close_all_positions("BTC-USDT")
         data = extract_order_variables(result)
+        print(f"Resultado de cerrar todas las posiciones: {result}")
         save_order_logs(data)
         enviar_data(result, 'https://beelzebot.com/webhook')
