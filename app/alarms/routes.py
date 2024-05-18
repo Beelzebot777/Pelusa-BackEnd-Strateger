@@ -1,4 +1,5 @@
-from flask import request, jsonify
+from flask import request, jsonify, render_template
+
 from app.alarms import alarms
 from app.alarms.util import extract_variables       #Cambiar nombre a extract_variables
 
@@ -9,6 +10,9 @@ from app.utils.services import enviar_data
 from datetime import datetime
 
 from app.strateger.utils import crear_operacion
+
+import sqlite3
+
 
 
 @alarms.route('/webhook', methods=['POST'])
@@ -43,5 +47,13 @@ def procesar(data):
     crear_operacion(variables)
     
     return variables
-                            
-   
+                        
+@alarms.route('/main', methods=['GET'])
+def show_alarms():
+    conn = sqlite3.connect('logs.db')
+    c = conn.cursor()
+    c.execute('SELECT * FROM tbl_alarms ORDER BY id DESC')
+    rows = c.fetchall()
+    conn.close()
+    
+    return render_template('alarms_main.html', alarms=rows)
