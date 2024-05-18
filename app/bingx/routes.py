@@ -1,4 +1,4 @@
-from flask import request, jsonify
+from flask import request, jsonify, render_template
 from app.bingx import bingx
 from app.bingx.api import make_order, close_all_positions
 from app.logging.models import save_order_logs
@@ -44,3 +44,15 @@ def close_all():
     print("----------------------------------------------------------------------------------------------------")       
     
     return jsonify({"status": "all positions closed", "result": result})
+
+import sqlite3
+
+@bingx.route('/trades-history', methods=['GET'])
+def show_trades():
+    conn = sqlite3.connect('logs.db')
+    c = conn.cursor()
+    c.execute('SELECT * FROM tbl_trades ORDER BY id DESC')
+    rows = c.fetchall()
+    conn.close()
+    
+    return render_template('trades_main.html', trades=rows)
