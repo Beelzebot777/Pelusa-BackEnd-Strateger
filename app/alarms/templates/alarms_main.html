@@ -1,0 +1,65 @@
+<!-- app/alarms/templates/alarms_main.html -->
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Alarmas</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+        tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+    </style>
+</head>
+<body>
+    <h1>Alarmas</h1>
+    <table>
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Ticker</th>
+                <th>Temporalidad</th>
+                <th>Quantity</th>
+                <th>Entry Price Alert</th>
+                <th>Exit Price Alert</th>
+                <th>Time Alert</th>
+                <th>Orden</th>
+                <th>Strategy</th>
+                <th>Raw Data</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for alarm in alarms %}
+            <tr>
+                <td>{{ alarm[0] }}</td>
+                <td>{{ alarm[1] }}</td>
+                <td>{{ alarm[2] }}</td>
+                <td>{{ alarm[3] }}</td>
+                <td>{{ alarm[4] }}</td>
+                <td>{{ alarm[5] }}</td>
+                <td>{{ alarm[6] }}</td>
+                <td>{{ alarm[7] }}</td>
+                <td>{{ alarm[8] }}</td>
+                <td>{{ alarm[9] }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</body>
+</html>
