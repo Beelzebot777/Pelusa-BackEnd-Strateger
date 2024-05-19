@@ -42,7 +42,7 @@ def procesar(data):
     
     save_alarm_logs(variables, data)
         
-    enviar_data(data, 'https://beelzebot.com/webhook')   
+    #enviar_data(data, 'https://beelzebot.com/webhook')         #Deberia hacer asincrono
     
     crear_operacion(variables)
     
