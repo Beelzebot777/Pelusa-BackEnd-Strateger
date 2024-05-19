@@ -47,7 +47,8 @@ def procesar(data):
     crear_operacion(variables)
     
     return variables
-                        
+
+'''
 @alarms.route('/main', methods=['GET'])
 def show_alarms():
     conn = sqlite3.connect('logs.db')
@@ -57,3 +58,4 @@ def show_alarms():
     conn.close()
     
     return render_template('alarms_main.html', alarms=rows)
+'''                       

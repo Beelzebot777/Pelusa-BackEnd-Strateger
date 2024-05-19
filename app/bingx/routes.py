@@ -8,10 +8,10 @@ from app.bingx.util import extract_order_variables
 def trade():
     # Aquí puedes manejar los datos enviados en la solicitud si es necesario
     
-    leverage = "5"
+    leverage = "50"
     symbol = "BTC-USDT"
-    side = "SELL"
-    positionSide = "SHORT"
+    side = "BUY"
+    positionSide = "LONG"
     order_type = "MARKET"
     quantity = 0.0002
     
@@ -47,6 +47,7 @@ def close_all():
 
 import sqlite3
 
+'''
 @bingx.route('/trades-history', methods=['GET'])
 def show_trades():
     conn = sqlite3.connect('logs.db')
@@ -56,3 +57,4 @@ def show_trades():
     conn.close()
     
     return render_template('trades_main.html', trades=rows)
+'''
