@@ -1,8 +1,10 @@
-# app/alarms/crud.py
-from sqlalchemy.orm import Session
+# Path: app/alarms/crud.py
+
+from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.future import select
 from app.alarms.models import Alarm
 
-def save_alarm(db: Session, variables: dict, raw_data: str):
+async def save_alarm(db: AsyncSession, variables: dict, raw_data: str):
     db_alarm = Alarm(
         Ticker=variables.get('Ticker'),
         Temporalidad=variables.get('Temporalidad'),
@@ -15,23 +17,11 @@ def save_alarm(db: Session, variables: dict, raw_data: str):
         raw_data=raw_data
     )
     db.add(db_alarm)
-    db.commit()
-    db.refresh(db_alarm)
+    await db.commit()
+    await db.refresh(db_alarm)
     return db_alarm
 
-def get_alarms(db: Session):
-    alarms = db.query(Alarm).all()
-    return [
-        {
-            "id": alarm.id,
-            "Ticker": alarm.Ticker,
-            "Temporalidad": alarm.Temporalidad,
-            "Quantity": alarm.Quantity,
-            "Entry_Price_Alert": alarm.Entry_Price_Alert,
-            "Exit_Price_Alert": alarm.Exit_Price_Alert,
-            "Time_Alert": alarm.Time_Alert,
-            "Order": alarm.Order,
-            "Strategy": alarm.Strategy
-        }
-        for alarm in alarms
-    ]
+async def get_alarms(db: AsyncSession):
+    result = await db.execute(select(Alarm))
+    alarms = result.scalars().all()
+    return alarms

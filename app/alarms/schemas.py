@@ -1,8 +1,7 @@
-# app/alarms/schemas.py
+# Path: app/alarms/schemas.py
 # Descripción: Esquemas de Pydantic para las alarmas
 from pydantic import BaseModel
 from typing import Optional
-
 
 class AlarmCreate(BaseModel):
     Ticker: str

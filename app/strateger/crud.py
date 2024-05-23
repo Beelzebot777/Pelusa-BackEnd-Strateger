@@ -1,12 +1,14 @@
 # Path: app/strateger/crud.py
 
-from sqlalchemy.orm import Session
+from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.future import select
 from app.strateger.models import Order
+from datetime import datetime
 
-def save_order(db: Session, variables: dict):    
+async def save_order(db: AsyncSession, variables: dict):
     db_order = Order(
         orderOpenTime=variables.get('orderOpenTime'),
-        orderCloseTime=variables.get('orderOpenTime'),
+        orderCloseTime=variables.get('orderCloseTime'),
         orderId=variables.get('Order ID'),
         symbol=variables.get('Symbol'),
         positionSide=variables.get('Position Side'),
@@ -27,12 +29,13 @@ def save_order(db: Session, variables: dict):
         stopGuaranteed=variables.get('Stop Guaranteed')
     )
     db.add(db_order)
-    db.commit()
-    db.refresh(db_order)    
+    await db.commit()  # Use await
+    await db.refresh(db_order)  # Use await
     return db_order
 
-def get_orders(db: Session):
-    orders = db.query(Order).all()
+async def get_orders(db: AsyncSession):
+    result = await db.execute(select(Order))
+    orders = result.scalars().all()
     return [
         {
             "id": order.id,
