@@ -4,7 +4,7 @@ from pydantic import BaseModel
 from typing import Optional
 
 
-class AlarmData(BaseModel):
+class AlarmCreate(BaseModel):
     Ticker: str
     Temporalidad: str
     Quantity: Optional[str] = None

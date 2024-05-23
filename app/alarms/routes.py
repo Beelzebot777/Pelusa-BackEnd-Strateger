@@ -4,7 +4,7 @@ from fastapi import APIRouter, Depends, HTTPException, Request
 from sqlalchemy.orm import Session
 
 from app.siteground.database import get_db_alarmas
-from app.alarms.schemas import AlarmData, AlarmResponse
+from app.alarms.schemas import AlarmCreate, AlarmResponse
 from app.alarms.crud import save_alarm, get_alarms
 
 from app.strateger.utils import crear_operacion
@@ -15,7 +15,7 @@ from typing import List
 router = APIRouter()
 
 @router.post("/webhook", response_model=AlarmResponse)
-async def webhook(request: Request, alarm_data: AlarmData, db: Session = Depends(get_db_alarmas)):
+async def webhook(request: Request, alarm_data: AlarmCreate, db: Session = Depends(get_db_alarmas)):
     try:
         client_ip = request.client.host
         logger.info(f"Alarm received from {client_ip}: {alarm_data.model_dump_json()}")
