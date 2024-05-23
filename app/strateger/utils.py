@@ -1,8 +1,7 @@
-from app.bingx.api import make_order, close_all_positions
-from app.bingx.util import extract_order_variables
-from app.logging.models import save_order_logs
-from app.utils.services import enviar_data
+#Path: app/strateger/utils.py
+#Description: Util functions for strateger
 
+'''
 def crear_operacion(variables):
     
     #Lo primero que deberia hacer esta funcion es checkear la variable['Strategy'] y actuar en consecuencia
@@ -40,3 +39,5 @@ def crear_operacion(variables):
         print(f"Resultado de cerrar todas las posiciones: {result}")
         save_order_logs(data)
         #enviar_data(result, 'https://beelzebot.com/webhook')
+
+'''

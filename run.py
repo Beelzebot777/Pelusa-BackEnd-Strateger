@@ -1,6 +1,16 @@
-from app import create_app
+import uvicorn
+import signal
+import sys
+from loguru import logger
 
-app = create_app()
+def signal_handler(sig, frame):
+    logger.info('Shutting down gracefully...')
+    sys.exit(0)
 
-if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=80)
+signal.signal(signal.SIGINT, signal_handler)
+
+if __name__ == "__main__":
+    try:
+        uvicorn.run("app.main:app", host="0.0.0.0", port=80)
+    except KeyboardInterrupt:
+        logger.info('Server stopped by user (Ctrl+C)')

@@ -1,3 +1,6 @@
+# Path: app/bingx/api.py
+# Description: API functions for BingX exchange
+
 import time
 import requests
 import hmac
@@ -12,6 +15,9 @@ APIURL = os.getenv("APIURL")
 APIKEY = os.getenv("APIKEY")
 SECRETKEY = os.getenv("SECRETKEY")
 
+#--------------------------------------------------------------
+#----------------------- Main Functions -----------------------
+#--------------------------------------------------------------
 
 def make_order(leverage, symbol, side, positionSide, order_type, quantity):
     payload = {}
@@ -47,6 +53,11 @@ def close_all_positions(symbol):
     paramsStr = parse_param(paramsMap)
     return send_request(method, path, paramsStr, payload)
 
+
+#------------------------------------------------------------
+#------------------- Funciones auxiliares -------------------
+#------------------------------------------------------------
+
 def get_sign(api_secret, payload):
     signature = hmac.new(api_secret.encode("utf-8"), payload.encode("utf-8"), digestmod=sha256).hexdigest()
     print("sign=" + signature)
@@ -70,4 +81,5 @@ def parse_param(paramsMap):
         return paramsStr + "timestamp=" + str(int(time.time() * 1000))
 
 if __name__ == '__main__':
-    print("demo:", make_order())
+    print("demo:", make_order("5", "BTC-USDT", "BUY", "LONG", "MARKET", 0.0002))
+    

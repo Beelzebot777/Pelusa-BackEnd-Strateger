@@ -1,3 +1,6 @@
+# Path: app/bingx/util.py
+# Description: Util functions for BingX app
+
 import json
 
 def extract_order_variables(json_string):
