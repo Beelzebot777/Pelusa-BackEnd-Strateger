@@ -6,7 +6,7 @@ from typing import Optional
 
 class OrderCreate(BaseModel):
     orderOpenTime: Optional[str] = None
-    orderId: int
+    orderId: str
     symbol: str
     positionSide: str
     side: str
@@ -31,7 +31,7 @@ class OrderCreate(BaseModel):
 class OrderResponse(BaseModel):
     id: int
     orderOpenTime: Optional[str] = None
-    orderId: int
+    orderId: str
     symbol: str
     positionSide: str
     side: str

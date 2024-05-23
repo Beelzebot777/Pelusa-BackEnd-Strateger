@@ -9,7 +9,7 @@ class Order(BaseOrdenes):
 
     id = Column(Integer, primary_key=True, index=True)
     orderOpenTime = Column(String(50))  # Definir longitud para VARCHAR
-    orderId = Column(Integer)
+    orderId = Column(String(50))
     symbol = Column(String(50))  # Definir longitud para VARCHAR
     positionSide = Column(String(50))  # Definir longitud para VARCHAR
     side = Column(String(50))  # Definir longitud para VARCHAR
