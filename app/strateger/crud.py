@@ -3,7 +3,7 @@
 from sqlalchemy.orm import Session
 from app.strateger.models import Order
 
-def save_order_logs(db: Session, variables: dict):    
+def save_order(db: Session, variables: dict):    
     db_order = Order(
         orderOpenTime=variables.get('orderOpenTime'),
         orderId=variables.get('Order ID'),
