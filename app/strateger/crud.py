@@ -6,6 +6,7 @@ from app.strateger.models import Order
 def save_order(db: Session, variables: dict):    
     db_order = Order(
         orderOpenTime=variables.get('orderOpenTime'),
+        orderCloseTime=variables.get('orderOpenTime'),
         orderId=variables.get('Order ID'),
         symbol=variables.get('Symbol'),
         positionSide=variables.get('Position Side'),
@@ -36,6 +37,7 @@ def get_orders(db: Session):
         {
             "id": order.id,
             "orderOpenTime": order.orderOpenTime,
+            "orderCloseTime": order.orderCloseTime,
             "orderId": order.orderId,
             "symbol": order.symbol,
             "positionSide": order.positionSide,
