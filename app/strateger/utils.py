@@ -17,7 +17,7 @@ async def crear_operacion(db_ordenes, variables):
     logger.info(f"Creando operación type_operation: {variables['Order']}")
     
     if type_operation == 'open long':
-        result = await make_order("100", "BTC-USDT", "BUY", "LONG", "MARKET", "0.001")        
+        result = await make_order("100", "BTC-USDT", "BUY", "LONG", "MARKET", "0.0005")        
         logger.info(f"Resultado de la orden: {result}")
         
         data = extract_order_variables(result)
@@ -27,7 +27,7 @@ async def crear_operacion(db_ordenes, variables):
         save_order(db_ordenes, data)  # Utilizar la versión asíncrona
         
     elif type_operation == 'open short':
-        result = await make_order("100", "BTC-USDT", "SELL", "SHORT", "MARKET", "0.001")        
+        result = await make_order("100", "BTC-USDT", "SELL", "SHORT", "MARKET", "0.0005")        
         logger.info(f"Resultado de la orden: {result}")
         
         data = extract_order_variables(result)
