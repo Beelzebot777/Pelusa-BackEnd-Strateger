@@ -6,7 +6,7 @@ from loguru import logger
 from contextlib import asynccontextmanager
 
 # Configuración de Loguru
-logger.add("logs/file_{time}.log")
+logger.add("logs/file_{time:YYYY-MM-DD}.log", rotation="00:00")
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
