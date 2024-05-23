@@ -5,7 +5,7 @@ from pydantic import BaseModel
 from typing import Optional
 
 class OrderCreate(BaseModel):
-    orderOpenTime: str
+    orderOpenTime: Optional[str] = None
     orderId: int
     symbol: str
     positionSide: str
@@ -26,11 +26,11 @@ class OrderCreate(BaseModel):
     stopGuaranteed: Optional[str] = None
 
     class Config:
-        orm_mode = True
+       from_attributes = True
 
 class OrderResponse(BaseModel):
     id: int
-    orderOpenTime: str
+    orderOpenTime: Optional[str] = None
     orderId: int
     symbol: str
     positionSide: str
@@ -51,4 +51,4 @@ class OrderResponse(BaseModel):
     stopGuaranteed: Optional[str] = None
 
     class Config:
-        orm_mode = True
+       from_attributes = True

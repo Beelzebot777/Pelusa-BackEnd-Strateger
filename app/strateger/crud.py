@@ -27,7 +27,7 @@ def save_order(db: Session, variables: dict):
     )
     db.add(db_order)
     db.commit()
-    db.refresh(db_order)
+    db.refresh(db_order)    
     return db_order
 
 def get_orders(db: Session):
