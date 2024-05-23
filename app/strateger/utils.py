@@ -1,43 +1,42 @@
 #Path: app/strateger/utils.py
 #Description: Util functions for strateger
 
-'''
-def crear_operacion(variables):
+from app.bingx.api import make_order, close_all_positions
+from loguru import logger
+
+async def crear_operacion(variables):
+    # Lo primero que deberia hacer esta funcion es checkear la variable['Strategy'] y actuar en consecuencia
     
-    #Lo primero que deberia hacer esta funcion es checkear la variable['Strategy'] y actuar en consecuencia
-    
-    order = variables.get('Order', '').lower()
+    type_operation = variables.get('Order', '').lower()
     quantity = variables.get('Quantity')
     
-    print("------------------------------------------------------------")
-    print("Creando operación...")
-    print(f"variables['Order']: {variables['Order']}")
+    logger.info(f"Creando operación type_operation: {variables['Order']}")
     
-    if order == 'open long':
-        print("Abriendo posición Long...")
-        result = make_order("100", "BTC-USDT", "BUY", "LONG", "MARKET", "0.01")
-        print(f"Resultado de la orden: {result}")
-        data = extract_order_variables(result)
-        save_order_logs(data)
-        #enviar_data(data, 'https://beelzebot.com/webhook')
-    if order == 'open short':
-        print("Abriendo posición Short...")
-        result = make_order("100", "BTC-USDT", "SELL", "SHORT", "MARKET", "0.01")        
-        print(f"Resultado de la orden: {result}")
-        data = extract_order_variables(result)
-        save_order_logs(data)
-        #enviar_data(data, 'https://beelzebot.com/webhook')
-    if order == 'close long':        
-        print("Cerrando posiciónes en Long...")
-        result = close_all_positions("BTC-USDT")
-        print(f"Resultado de cerrar todas las posiciones: {result}")
-        #enviar_data(result, 'https://beelzebot.com/webhook')
-    if order == 'close short':       
-        print("Cerrando posiciónes en Short...") 
-        result = close_all_positions("BTC-USDT")
-        data = extract_order_variables(result)
-        print(f"Resultado de cerrar todas las posiciones: {result}")
-        save_order_logs(data)
-        #enviar_data(result, 'https://beelzebot.com/webhook')
-
-'''
+    if type_operation == 'open long':        
+        result = await make_order("100", "BTC-USDT", "BUY", "LONG", "MARKET", "0.001")
+        logger.info(f"Resultado de la orden: {result}")
+        # data = extract_order_variables(result)
+        # save_order_logs(data)
+        # await enviar_data(data, 'https://beelzebot.com/webhook')
+        
+    elif type_operation == 'open short':        
+        result = await make_order("100", "BTC-USDT", "SELL", "SHORT", "MARKET", "0.001")
+        logger.info(f"Resultado de la orden: {result}")
+        # data = extract_order_variables(result)
+        # save_order_logs(data)
+        # await enviar_data(data, 'https://beelzebot.com/webhook')
+        
+    elif type_operation == 'close long':        
+        result = await close_all_positions("BTC-USDT")
+        logger.info(f"Resultado de cerrar todas las posiciones: {result}")
+        # save_order_logs(data)
+        # await enviar_data(result, 'https://beelzebot.com/webhook')
+        
+    elif type_operation == 'close short':        
+        result = await close_all_positions("BTC-USDT")
+        logger.info(f"Resultado de cerrar todas las posiciones: {result}")
+        # save_order_logs(data)
+        # await enviar_data(result, 'https://beelzebot.com/webhook')
+        
+    else:
+        logger.warning(f"Orden no reconocida: {variables['Order']}")
