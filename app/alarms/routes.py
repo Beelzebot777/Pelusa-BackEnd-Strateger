@@ -1,8 +1,14 @@
+# Path: app/alarms/routes.py
+
 from fastapi import APIRouter, Depends, HTTPException, Request
 from sqlalchemy.orm import Session
+
 from app.siteground.database import get_db_alarmas
 from app.alarms.schemas import AlarmData, AlarmResponse
 from app.alarms.crud import save_alarm, get_alarms
+
+from app.strateger.utils import crear_operacion
+
 from loguru import logger
 from typing import List
 
@@ -20,6 +26,8 @@ async def webhook(request: Request, alarm_data: AlarmData, db: Session = Depends
         saved_alarm = save_alarm(db, variables, raw_data)
         logger.info(f"ID Alarm saved: {saved_alarm.id}")
         
+        await crear_operacion(variables)
+        
         # Crear y devolver AlarmResponse usando model_validate
         return AlarmResponse.model_validate(saved_alarm)
     except Exception as e:
@@ -34,3 +42,4 @@ async def get_alarms_endpoint(db: Session = Depends(get_db_alarmas)):
     except Exception as e:
         logger.error(f"Error fetching alarms: {e}")
         raise HTTPException(status_code=500, detail="There was an error fetching the alarms")
+    

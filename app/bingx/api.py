@@ -19,18 +19,10 @@ SECRETKEY = os.getenv("SECRETKEY")
 #----------------------- Main Functions -----------------------
 #--------------------------------------------------------------
 
-def make_order(leverage, symbol, side, positionSide, order_type, quantity):
+async def make_order(leverage, symbol, side, positionSide, order_type, quantity):
     payload = {}
     path = '/openApi/swap/v2/trade/order'
     method = "POST"
-    #paramsMap = {
-    #    "leverage": "5",
-    #    "symbol": "BTC-USDT",
-    #    "side": "BUY",
-    #    "positionSide": "LONG",
-    #    "type": "MARKET",
-    #    "quantity": 0.0002 
-    #}
     paramsMap = {
         "leverage": leverage,
         "symbol": symbol,
@@ -42,7 +34,7 @@ def make_order(leverage, symbol, side, positionSide, order_type, quantity):
     paramsStr = parse_param(paramsMap)
     return send_request(method, path, paramsStr, payload)
 
-def close_all_positions(symbol):
+async def close_all_positions(symbol):
     payload = {}
     path = '/openApi/swap/v2/trade/closeAllPositions'
     method = "POST"
