@@ -1,4 +1,6 @@
 # app/alarms/models.py
+# Descripción: Modelo de la tabla de alarmas
+
 from sqlalchemy import Column, Integer, String, DateTime
 from app.siteground.base import Base
 
