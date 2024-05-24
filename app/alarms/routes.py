@@ -15,13 +15,14 @@ router = APIRouter()
 async def webhook(request: Request, alarm_data: AlarmCreate, db: AsyncSession = Depends(get_db_alarmas), db_ordenes: AsyncSession = Depends(get_db_ordenes)):
     try:
         client_ip = request.client.host
-        logger.info(f"Alarm received from {client_ip}: {alarm_data.json()}")
+        logger.info(f"Alarm received from {client_ip}")
+        logger.debug(f"Alarm Data: {alarm_data.model_dump_json()}")
 
         variables = alarm_data.model_dump()
         raw_data = alarm_data.model_dump_json()
 
         saved_alarm = await save_alarm(db, variables, raw_data)
-        logger.info(f"ID Alarm saved: {saved_alarm.id}")
+        logger.info(f"Alarm saved in DB, with Id: {saved_alarm.id}")
 
         await crear_operacion(db_ordenes, variables)
 

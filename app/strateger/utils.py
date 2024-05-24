@@ -15,7 +15,8 @@ async def crear_operacion(db_ordenes, variables):
 
     if type_operation == 'open long':
         result = await make_order("100", "BTC-USDT", "BUY", "LONG", "MARKET", "0.001")
-        logger.info(f"Resultado de la orden: {result}")
+        logger.info(f"Operacion ejecutada")
+        logger.debug(f"Resultado de la orden: {result}")
         data = extract_order_variables(result)
         data['orderOpenTime'] = datetime.now()
         data['orderCloseTime'] = None
@@ -23,6 +24,7 @@ async def crear_operacion(db_ordenes, variables):
         
     elif type_operation == 'open short':
         result = await make_order("100", "BTC-USDT", "SELL", "SHORT", "MARKET", "0.001")
+        logger.info(f"Operacion ejecutada")
         logger.info(f"Resultado de la orden: {result}")
         data = extract_order_variables(result)
         data['orderOpenTime'] = datetime.now()
@@ -31,7 +33,8 @@ async def crear_operacion(db_ordenes, variables):
         
     elif type_operation == 'close long':
         result = await close_all_positions("BTC-USDT")
-        logger.info(f"Resultado de cerrar todas las posiciones: {result}")
+        logger.info("Cerrando todas las operaciones ")
+        logger.debug(f"Resultado de cerrar todas las posiciones: {result}")
         
         #data['orderOpenTime'] = None
         #data['orderCloseTime'] = datetime.now()
@@ -39,7 +42,8 @@ async def crear_operacion(db_ordenes, variables):
         
     elif type_operation == 'close short':
         result = await close_all_positions("BTC-USDT")
-        logger.info(f"Resultado de cerrar todas las posiciones: {result}")
+        logger.info("Cerrando todas las operaciones ")
+        logger.debug(f"Resultado de cerrar todas las posiciones: {result}")
         
         #data['orderOpenTime'] = None
         #data['orderCloseTime'] = datetime.now()
