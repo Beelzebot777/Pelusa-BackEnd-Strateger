@@ -1,8 +1,12 @@
+# app/utils/server_status.py
+
 import asyncio
 from loguru import logger
 
 async def log_server_status():
     while True:
-        # Aquí puedes añadir cualquier lógica para verificar el estado del servidor
-        logger.info("Server is running smoothly")
-        await asyncio.sleep(60)  # Espera 60 segundos antes de registrar el estado de nuevo
+        try:            
+            logger.info("Server is running smoothly")
+        except Exception as e:
+            logger.error(f"Server status check failed: {e}")
+        await asyncio.sleep(60) 
