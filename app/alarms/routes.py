@@ -17,8 +17,8 @@ async def webhook(request: Request, alarm_data: AlarmCreate, db: AsyncSession = 
         client_ip = request.client.host
         logger.info(f"Alarm received from {client_ip}: {alarm_data.json()}")
 
-        variables = alarm_data.dict()
-        raw_data = alarm_data.json()
+        variables = alarm_data.model_dump()
+        raw_data = alarm_data.model_dump_json()
 
         saved_alarm = await save_alarm(db, variables, raw_data)
         logger.info(f"ID Alarm saved: {saved_alarm.id}")
