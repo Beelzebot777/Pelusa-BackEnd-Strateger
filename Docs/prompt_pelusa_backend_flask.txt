@@ -7,6 +7,7 @@ Mi Backend busca las siguientes funcionalidades:
 - Guardar la informacion de las alarmas en una base de datos 'Desarrollo-Alarmas' en Siteground.
 - Procesar las alarmas, esto significa gestionarlas con el objetivo de realizar operaciones en BingX.
 - Guardar la informacion de las operaciones realizadas en la base de datos 'Desarrollo-Operaciones' en Siteground.
+- Solicitar la informacion de las velas a la API de BingX y guardar esta informacion en la base de datos 'Desarrollo-Velas'
 
 El frontend lo desarrollaremos en otro repositorio.
 
@@ -20,6 +21,7 @@ Dependencias:
 - Loguru (Logging compatible con FastAPI)
 - Uvicorn (Servidor ASGI rápido y ligero) Utilizado para desarrollo
 - Gunicorn (Servidor WSGI escalable y robusto) Utilizado para produccion
+- aiomysql (Driver async para MySQL)
 
 Mi estructura de directorios actual es:
 '''
