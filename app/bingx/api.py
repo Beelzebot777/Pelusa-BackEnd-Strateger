@@ -7,6 +7,7 @@ import hmac
 from hashlib import sha256
 import os
 from dotenv import load_dotenv
+from datetime import datetime
 
 # Cargar variables de entorno
 load_dotenv()
@@ -45,10 +46,27 @@ async def close_all_positions(symbol):
     paramsStr = parse_param(paramsMap)
     return send_request(method, path, paramsStr, payload)
 
+async def get_k_line_data(symbol, interval, limit, start_time, end_time):
+    payload = {}
+    path = '/openApi/swap/v3/quote/klines'
+    method = "GET"
+    paramsMap = {        
+        "symbol": symbol,
+        "interval": interval,
+        "limit": limit,
+        "startTime": date_to_milliseconds(start_time),  # Tiempo de inicio en milisegundos
+        "endTime": date_to_milliseconds(end_time)  # Tiempo de fin en milisegundos
+    }
+    paramsStr = parse_param(paramsMap)
+    return send_request(method, path, paramsStr, payload)
 
 #------------------------------------------------------------
 #------------------- Funciones auxiliares -------------------
 #------------------------------------------------------------
+
+def date_to_milliseconds(date_str):
+    dt = datetime.strptime(date_str, "%Y-%m-%d %H:%M:%S")
+    return int(dt.timestamp() * 1000)
 
 def get_sign(api_secret, payload):
     signature = hmac.new(api_secret.encode("utf-8"), payload.encode("utf-8"), digestmod=sha256).hexdigest()
@@ -73,5 +91,6 @@ def parse_param(paramsMap):
         return paramsStr + "timestamp=" + str(int(time.time() * 1000))
 
 if __name__ == '__main__':
-    print("demo:", make_order("5", "BTC-USDT", "BUY", "LONG", "MARKET", 0.0002))
+    pass
+
     
