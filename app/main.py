@@ -14,6 +14,7 @@ from datetime import datetime
 
 logger.add("logs/file_{time:YYYY-MM-DD}.log", rotation="00:00")
 
+
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     from app.siteground.database import init_db_alarmas, init_db_ordenes
@@ -37,6 +38,16 @@ async def lifespan(app: FastAPI):
 
 app = FastAPI(lifespan=lifespan)
 
+from fastapi.middleware.cors import CORSMiddleware
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["http://localhost:3000"],  # Permite solicitudes desde el frontend
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
 @app.get("/status-server", tags=["health"])
 async def health_check(db_alarmas: AsyncSession = Depends(get_db_alarmas), db_ordenes: AsyncSession = Depends(get_db_ordenes)):
     try:
@@ -59,4 +70,5 @@ async def health_check(db_alarmas: AsyncSession = Depends(get_db_alarmas), db_or
 app.include_router(alarms_router, prefix="/alarms", tags=["alarms"])
 app.include_router(bingx_router, prefix="/bingx", tags=["bingx"])
 app.include_router(strateger_router, prefix="/strateger", tags=["strateger"])
+
 
