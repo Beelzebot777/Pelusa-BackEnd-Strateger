@@ -1,6 +1,6 @@
 # Path: app/alarms/routes.py
 
-from fastapi import APIRouter, Depends, HTTPException, Request
+from fastapi import APIRouter, Depends, HTTPException, Request, Query
 from sqlalchemy.ext.asyncio import AsyncSession
 from app.siteground.database import get_db_alarmas, get_db_ordenes
 from app.alarms.schemas import AlarmCreate, AlarmResponse
@@ -32,9 +32,14 @@ async def webhook(request: Request, alarm_data: AlarmCreate, db: AsyncSession = 
         raise HTTPException(status_code=500, detail="There was an error processing the alarm")
 
 @router.get("/alarms", response_model=List[AlarmResponse])
-async def get_alarms_endpoint(db: AsyncSession = Depends(get_db_alarmas)):
+async def get_alarms_endpoint(
+    db: AsyncSession = Depends(get_db_alarmas),
+    limit: int = Query(default=10, ge=1),  # Limit para el número de resultados por página
+    offset: int = Query(default=0, ge=0),   # Offset para el desplazamiento
+    latest: bool = Query(default=False)     # Parámetro para obtener las últimas alarmas
+):
     try:
-        alarms = await get_alarms(db)
+        alarms = await get_alarms(db, limit=limit, offset=offset, latest=latest)
         return [AlarmResponse.from_orm(alarm) for alarm in alarms]
     except Exception as e:
         logger.error(f"Error fetching alarms: {e}")
