@@ -21,7 +21,9 @@ async def save_alarm(db: AsyncSession, variables: dict, raw_data: str):
     await db.refresh(db_alarm)
     return db_alarm
 
-async def get_alarms(db: AsyncSession):
-    result = await db.execute(select(Alarm))
-    alarms = result.scalars().all()
-    return alarms
+async def get_alarms(db: AsyncSession, limit: int = 10, offset: int = 0, latest: bool = False):
+    query = select(Alarm).offset(offset).limit(limit)
+    if latest:
+        query = query.order_by(Alarm.id.desc())
+    result = await db.execute(query)
+    return result.scalars().all()
