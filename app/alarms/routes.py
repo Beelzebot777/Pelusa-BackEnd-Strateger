@@ -40,11 +40,17 @@ async def webhook(request: Request, alarm_data: AlarmCreate, db: AsyncSession = 
 
 @router.get("/alarms", response_model=List[AlarmResponse])
 async def get_alarms_endpoint(
+    request: Request,
     db: AsyncSession = Depends(get_db_alarmas),
     limit: int = Query(default=10, ge=1),  # Limit para el número de resultados por página
     offset: int = Query(default=0, ge=0),   # Offset para el desplazamiento
     latest: bool = Query(default=False)     # Parámetro para obtener las últimas alarmas
 ):
+    client_ip = request.client.host
+    # Verificar si la IP está permitida
+    logger.info(f"Fetching alarms from {client_ip}")
+    await is_ip_allowed(client_ip)
+    
     try:
         alarms = await get_alarms(db, limit=limit, offset=offset, latest=latest)
         return [AlarmResponse.from_orm(alarm) for alarm in alarms]
