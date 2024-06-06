@@ -11,5 +11,8 @@ class Settings:
     APIURL = os.getenv("APIURL")
     APIKEY = os.getenv("APIKEY")
     SECRETKEY = os.getenv("SECRETKEY")
+    ALLOWED_IPS = os.getenv("ALLOWED_IPS", "").split(",")
+    BLOCKED_IPS = os.getenv("BLOCKED_IPS", "").split(",")
 
 settings = Settings()
+
