@@ -6,6 +6,7 @@ from app.siteground.database import get_db_alarmas, get_db_ordenes
 from app.alarms.schemas import AlarmCreate, AlarmResponse
 from app.alarms.crud import save_alarm, get_alarms
 from app.strateger.utils import crear_operacion
+from app.utils.ip_check import is_ip_allowed
 from loguru import logger
 from typing import List
 
@@ -16,6 +17,10 @@ async def webhook(request: Request, alarm_data: AlarmCreate, db: AsyncSession = 
     try:
         client_ip = request.client.host
         logger.info(f"Alarm received from {client_ip}")
+
+        # Verificar si la IP está permitida
+        is_ip_allowed(client_ip)
+
         logger.debug(f"Alarm Data: {alarm_data.model_dump_json()}")
 
         variables = alarm_data.model_dump()
@@ -27,6 +32,8 @@ async def webhook(request: Request, alarm_data: AlarmCreate, db: AsyncSession = 
         await crear_operacion(db_ordenes, variables)
 
         return AlarmResponse.from_orm(saved_alarm)
+    except HTTPException:
+        raise  # Re-lanzar la excepción HTTP
     except Exception as e:
         logger.error(f"Error processing webhook: {e}")
         raise HTTPException(status_code=500, detail="There was an error processing the alarm")
