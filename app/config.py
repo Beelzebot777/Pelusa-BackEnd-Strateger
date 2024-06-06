@@ -12,8 +12,7 @@ class Settings:
     APIKEY = os.getenv("APIKEY")
     SECRETKEY = os.getenv("SECRETKEY")
     ALLOWED_IPS = os.getenv("ALLOWED_IPS", "").split(",")
-    BLOCKED_IPS = os.getenv("BLOCKED_IPS", "").split(",")
-    ALLOWED_IP_FRONTEND = os.getenv("ALLOWED_IP_FRONTEND", "").split(",")
+    BLOCKED_IPS = os.getenv("BLOCKED_IPS", "").split(",")    
 
 settings = Settings()
 
