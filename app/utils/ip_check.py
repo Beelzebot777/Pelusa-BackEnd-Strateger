@@ -2,7 +2,7 @@ from fastapi import HTTPException
 from loguru import logger
 from app.config import settings
 
-def is_ip_allowed(client_ip: str) -> bool:
+async def is_ip_allowed(client_ip: str) -> bool:
     if client_ip in settings.BLOCKED_IPS:
         logger.warning(f"Blocked IP {client_ip} attempted to access the service")
         raise HTTPException(status_code=403, detail="Access forbidden")

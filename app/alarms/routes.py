@@ -19,7 +19,7 @@ async def webhook(request: Request, alarm_data: AlarmCreate, db: AsyncSession = 
         logger.info(f"Alarm received from {client_ip}")
 
         # Verificar si la IP está permitida
-        is_ip_allowed(client_ip)
+        await is_ip_allowed(client_ip)
 
         logger.debug(f"Alarm Data: {alarm_data.model_dump_json()}")
 
