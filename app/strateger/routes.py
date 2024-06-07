@@ -1,6 +1,6 @@
 # Path: app/strateger/routes.py
 
-from fastapi import APIRouter, Depends, HTTPException, Request
+from fastapi import APIRouter, Depends, HTTPException, Request, Query
 from sqlalchemy.orm import Session
 
 from app.siteground.database import get_db_ordenes
@@ -14,14 +14,20 @@ from typing import List
 router = APIRouter()
 
 @router.get("/orders", response_model=List[OrderResponse])
-async def get_orders_endpoint(request: Request, db_orders: Session = Depends(get_db_ordenes)):
+async def get_orders_endpoint(
+    request: Request, 
+    db_orders: Session = Depends(get_db_ordenes),
+    limit: int = Query(default=10, ge=1),  # Limit para el número de resultados por página
+    offset: int = Query(default=0, ge=0),   # Offset para el desplazamiento
+    latest: bool = Query(default=False)     # Parámetro para obtener las últimas alarmas
+):
     client_ip = request.client.host
     # Verificar si la IP está permitida
     
     await is_ip_allowed(client_ip)
     
     try:
-        orders = get_orders(db_orders)
+        orders = await get_orders(db_orders, limit=limit, offset=offset, latest=latest)
         return [OrderResponse.model_validate(order) for order in orders]
     except Exception as e:
         logger.error(f"Error fetching orders: {e}")
