@@ -33,11 +33,11 @@ class OrderResponse(BaseModel):
     id: int
     orderOpenTime: Optional[str] = None
     orderCloseTime: Optional[str] = None
-    orderId: str
-    symbol: str
-    positionSide: str
-    side: str
-    type: str
+    orderId: Optional[str] = None
+    symbol: Optional[str] = None
+    positionSide: Optional[str] = None
+    side: Optional[str] = None
+    type: Optional[str] = None
     price: Optional[float] = None
     quantity: Optional[float] = None
     stopPrice: Optional[float] = None
