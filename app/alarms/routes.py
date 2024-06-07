@@ -2,7 +2,7 @@
 
 from fastapi import APIRouter, Depends, HTTPException, Request, Query
 from sqlalchemy.ext.asyncio import AsyncSession
-from app.siteground.database import get_db_alarmas, get_db_ordenes
+from app.siteground.database import get_db_alarmas
 from app.alarms.schemas import AlarmCreate, AlarmResponse
 from app.alarms.crud import save_alarm, get_alarms
 from app.strateger.utils import crear_operacion
