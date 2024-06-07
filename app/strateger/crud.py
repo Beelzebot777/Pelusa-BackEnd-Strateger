@@ -33,32 +33,10 @@ async def save_order(db: AsyncSession, variables: dict):
     await db.refresh(db_order)  # Use await
     return db_order
 
-async def get_orders(db: AsyncSession):
-    result = await db.execute(select(Order))
-    orders = result.scalars().all()
-    return [
-        {
-            "id": order.id,
-            "orderOpenTime": order.orderOpenTime,
-            "orderCloseTime": order.orderCloseTime,
-            "orderId": order.orderId,
-            "symbol": order.symbol,
-            "positionSide": order.positionSide,
-            "side": order.side,
-            "type": order.type,
-            "price": order.price,
-            "quantity": order.quantity,
-            "stopPrice": order.stopPrice,
-            "workingType": order.workingType,
-            "clientOrderID": order.clientOrderID,
-            "timeInForce": order.timeInForce,
-            "priceRate": order.priceRate,
-            "stopLoss": order.stopLoss,
-            "takeProfit": order.takeProfit,
-            "reduceOnly": order.reduceOnly,
-            "activationPrice": order.activationPrice,
-            "closePosition": order.closePosition,
-            "stopGuaranteed": order.stopGuaranteed
-        }
-        for order in orders
-    ]
+async def get_orders(db: AsyncSession, limit: int = 10, offset: int = 0, latest: bool = False):
+    query = select(Order).offset(offset).limit(limit)
+    if latest:
+        query = query.order_by(Order.id.desc())
+    result = await db.execute(query)
+    return result.scalars().all()
+    
