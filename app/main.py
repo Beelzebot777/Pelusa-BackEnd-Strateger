@@ -4,21 +4,19 @@ from fastapi import FastAPI, Depends, HTTPException, Request
 from fastapi.responses import JSONResponse
 import asyncio
 
-from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy.sql import text
-
 from loguru import logger
 
 from contextlib import asynccontextmanager
-from app.siteground.database import get_db_alarmas, get_db_ordenes, close_db_connections
+from app.siteground.database import close_db_connections
 
 from app.utils.server_status import log_server_status
-from app.utils.ip_check import is_ip_allowed
 from app.middlewares import AllowedIPsMiddleware
+from fastapi.middleware.cors import CORSMiddleware
 
 from app.alarms.routes import router as alarms_router
 from app.bingx.routes import router as bingx_router
 from app.strateger.routes import router as strateger_router
+from app.server.routes import router as server_router
 
 #------------------------------------------------------- LOGGING -------------------------------------------------------
 
@@ -53,8 +51,6 @@ app = FastAPI(lifespan=lifespan)
 
 #------------------------------------------------------- MIDDLEWARE ----------------------------------------------------
 
-from fastapi.middleware.cors import CORSMiddleware
-
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["http://localhost:3000"],  # Permite solicitudes desde el frontend
@@ -79,34 +75,7 @@ async def not_found_handler(request: Request, exc: HTTPException):
         content={"Not Found"}
     )
 
-
-@app.get("/status-server", tags=["health"])
-async def health_check(request: Request, db_alarmas: AsyncSession = Depends(get_db_alarmas), db_ordenes: AsyncSession = Depends(get_db_ordenes)):
-    
-    client_ip = request.client.host
-    logger.info(f"Alarm received from {client_ip}")
-
-    # Verificar si la IP está permitida
-    await is_ip_allowed(client_ip)
-    
-    try:
-        # Verificar conexión con la base de datos de alarmas
-        await db_alarmas.execute(text("SELECT 1"))
-        
-        # Verificar conexión con la base de datos de órdenes
-        await db_ordenes.execute(text("SELECT 1"))
-
-        # Obtener la hora actual
-        current_time = datetime.now()
-        time_str = current_time.strftime("%Y-%m-%d %H:%M:%S")
-
-        return JSONResponse(status_code=200, content={"status": "ok", "time": time_str})
-    except Exception as e:
-        logger.error(f"Health check failed: {e}")
-        return JSONResponse(status_code=500, content={"status": "error", "detail": str(e)})
-
-
 app.include_router(alarms_router, prefix="/alarms", tags=["alarms"])
 app.include_router(bingx_router, prefix="/bingx", tags=["bingx"])
 app.include_router(strateger_router, prefix="/strateger", tags=["strateger"])
-
+app.include_router(server_router, prefix="/server", tags=["server"])
