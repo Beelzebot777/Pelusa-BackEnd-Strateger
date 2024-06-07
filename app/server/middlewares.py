@@ -4,6 +4,7 @@ from starlette.middleware.base import BaseHTTPMiddleware
 from starlette.requests import Request
 from starlette.responses import Response
 from starlette.responses import JSONResponse
+from starlette.types import ASGIApp
 from app.config import settings
 from loguru import logger
 import json
@@ -31,3 +32,28 @@ class InvalidRequestLoggingMiddleware(BaseHTTPMiddleware):
                 f"User-Agent: {user_agent}, Error: {exc}"
             )
             return Response(content=json.dumps({"detail": "Invalid request"}), status_code=400, media_type="application/json")
+
+class LogResponseMiddleware(BaseHTTPMiddleware):
+    def __init__(self, app: ASGIApp):
+        super().__init__(app)
+
+    async def dispatch(self, request: Request, call_next):
+        response = await call_next(request)
+
+        # Log the response details
+        client_ip = request.client.host
+        method = request.method
+        url = str(request.url)
+        status_code = response.status_code
+
+        response_body = [section async for section in response.body_iterator]
+        response.body_iterator = iter(response_body)
+
+        try:
+            response_text = json.loads(response_body[0].decode())
+        except Exception:
+            response_text = str(response_body)
+
+        logger.info(f"Response to {client_ip} - {method} {url} - Status: {status_code} - Response: {response_text}")
+
+        return response

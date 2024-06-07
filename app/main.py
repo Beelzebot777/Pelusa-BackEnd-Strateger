@@ -6,7 +6,7 @@ from loguru import logger
 from contextlib import asynccontextmanager
 from app.siteground.database import close_db_connections
 from app.utils.server_status import log_server_status
-from app.server.middlewares import AllowedIPsMiddleware, InvalidRequestLoggingMiddleware
+from app.server.middlewares import AllowedIPsMiddleware, InvalidRequestLoggingMiddleware, LogResponseMiddleware
 from fastapi.middleware.cors import CORSMiddleware
 from app.alarms.routes import router as alarms_router
 from app.bingx.routes import router as bingx_router
@@ -55,6 +55,9 @@ app.add_middleware(AllowedIPsMiddleware)
 
 # Añadir el middleware de captura de solicitudes inválidas
 app.add_middleware(InvalidRequestLoggingMiddleware)
+
+# Añadir el middleware de log de respuestas
+app.add_middleware(LogResponseMiddleware)
 
 #------------------------------------------------------- EXCEPTION HANDLERS ----------------------------------------------
 @app.exception_handler(404)
