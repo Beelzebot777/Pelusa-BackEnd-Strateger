@@ -39,6 +39,14 @@ class LogResponseMiddleware(BaseHTTPMiddleware):
 
     async def dispatch(self, request: Request, call_next):
         response = await call_next(request)
+        response_body = b""
+        async for chunk in response.body_iterator:
+            response_body += chunk
+
+        try:
+            response_text = json.loads(response_body.decode())
+        except Exception:
+            response_text = response_body.decode()
 
         # Log the response details
         client_ip = request.client.host
@@ -46,14 +54,6 @@ class LogResponseMiddleware(BaseHTTPMiddleware):
         url = str(request.url)
         status_code = response.status_code
 
-        response_body = [section async for section in response.body_iterator]
-        response.body_iterator = iter(response_body)
-
-        try:
-            response_text = json.loads(response_body[0].decode())
-        except Exception:
-            response_text = str(response_body)
-
         logger.info(f"Response to {client_ip} - {method} {url} - Status: {status_code} - Response: {response_text}")
 
-        return response
+        return Response(content=response_body, status_code=status_code, headers=dict(response.headers))
