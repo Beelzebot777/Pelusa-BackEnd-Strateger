@@ -72,7 +72,7 @@ async def not_found_handler(request: Request, exc: HTTPException):
     logger.warning(f"404 Not Found: {requested_url} from IP: {client_ip} with User-Agent: {user_agent}")
     return JSONResponse(
         status_code=404,
-        content={"Not Found"}
+        content={"detail": "Not Found"}
     )
 
 app.include_router(alarms_router, prefix="/alarms", tags=["alarms"])
