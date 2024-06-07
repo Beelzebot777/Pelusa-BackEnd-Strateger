@@ -1,29 +1,22 @@
 from datetime import datetime
-
 from fastapi import FastAPI, Depends, HTTPException, Request
 from fastapi.responses import JSONResponse
 import asyncio
-
 from loguru import logger
-
 from contextlib import asynccontextmanager
 from app.siteground.database import close_db_connections
-
 from app.utils.server_status import log_server_status
-from app.middlewares import AllowedIPsMiddleware
+from app.server.middlewares import AllowedIPsMiddleware, InvalidRequestLoggingMiddleware
 from fastapi.middleware.cors import CORSMiddleware
-
 from app.alarms.routes import router as alarms_router
 from app.bingx.routes import router as bingx_router
 from app.strateger.routes import router as strateger_router
 from app.server.routes import router as server_router
 
 #------------------------------------------------------- LOGGING -------------------------------------------------------
-
 logger.add("logs/file_{time:YYYY-MM-DD}.log", rotation="00:00")
 
 #------------------------------------------------------- ASYNC CONTEXT MANAGER -----------------------------------------
-
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     from app.siteground.database import init_db_alarmas, init_db_ordenes
@@ -46,11 +39,9 @@ async def lifespan(app: FastAPI):
         await close_db_connections()  # Asegúrate de cerrar las conexiones aquí
 
 #------------------------------------------------------- FASTAPI -------------------------------------------------------
-
 app = FastAPI(lifespan=lifespan)
 
 #------------------------------------------------------- MIDDLEWARE ----------------------------------------------------
-
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["http://localhost:3000"],  # Permite solicitudes desde el frontend
@@ -62,8 +53,10 @@ app.add_middleware(
 # Añadir el middleware de IPs permitidas
 app.add_middleware(AllowedIPsMiddleware)
 
-#------------------------------------------------------- EXCEPTION HANDLERS ----------------------------------------------
+# Añadir el middleware de captura de solicitudes inválidas
+app.add_middleware(InvalidRequestLoggingMiddleware)
 
+#------------------------------------------------------- EXCEPTION HANDLERS ----------------------------------------------
 @app.exception_handler(404)
 async def not_found_handler(request: Request, exc: HTTPException):
     client_ip = request.client.host
