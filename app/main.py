@@ -1,19 +1,30 @@
+from datetime import datetime
+
 from fastapi import FastAPI, Depends, HTTPException, Request
 from fastapi.responses import JSONResponse
+import asyncio
+
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.sql import text
+
+from loguru import logger
+
+from contextlib import asynccontextmanager
+from app.siteground.database import get_db_alarmas, get_db_ordenes, close_db_connections
+
+from app.utils.server_status import log_server_status
+from app.utils.ip_check import is_ip_allowed
+from app.middlewares import AllowedIPsMiddleware
+
 from app.alarms.routes import router as alarms_router
 from app.bingx.routes import router as bingx_router
 from app.strateger.routes import router as strateger_router
-from loguru import logger
-from contextlib import asynccontextmanager
-from app.siteground.database import get_db_alarmas, get_db_ordenes, close_db_connections
-import asyncio
-from app.utils.server_status import log_server_status
-from datetime import datetime
+
+#------------------------------------------------------- LOGGING -------------------------------------------------------
 
 logger.add("logs/file_{time:YYYY-MM-DD}.log", rotation="00:00")
 
+#------------------------------------------------------- ASYNC CONTEXT MANAGER -----------------------------------------
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -36,7 +47,11 @@ async def lifespan(app: FastAPI):
         logger.info("Shutting down...")
         await close_db_connections()  # Asegúrate de cerrar las conexiones aquí
 
+#------------------------------------------------------- FASTAPI -------------------------------------------------------
+
 app = FastAPI(lifespan=lifespan)
+
+#------------------------------------------------------- MIDDLEWARE ----------------------------------------------------
 
 from fastapi.middleware.cors import CORSMiddleware
 
@@ -48,6 +63,11 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+# Añadir el middleware de IPs permitidas
+app.add_middleware(AllowedIPsMiddleware)
+
+#------------------------------------------------------- EXCEPTION HANDLERS ----------------------------------------------
+
 @app.exception_handler(404)
 async def not_found_handler(request: Request, exc: HTTPException):
     client_ip = request.client.host
@@ -56,12 +76,19 @@ async def not_found_handler(request: Request, exc: HTTPException):
     logger.warning(f"404 Not Found: {requested_url} from IP: {client_ip} with User-Agent: {user_agent}")
     return JSONResponse(
         status_code=404,
-        content={"detail": "Not Found"}
+        content={"Not Found"}
     )
 
 
 @app.get("/status-server", tags=["health"])
-async def health_check(db_alarmas: AsyncSession = Depends(get_db_alarmas), db_ordenes: AsyncSession = Depends(get_db_ordenes)):
+async def health_check(request: Request, db_alarmas: AsyncSession = Depends(get_db_alarmas), db_ordenes: AsyncSession = Depends(get_db_ordenes)):
+    
+    client_ip = request.client.host
+    logger.info(f"Alarm received from {client_ip}")
+
+    # Verificar si la IP está permitida
+    await is_ip_allowed(client_ip)
+    
     try:
         # Verificar conexión con la base de datos de alarmas
         await db_alarmas.execute(text("SELECT 1"))
@@ -82,5 +109,4 @@ async def health_check(db_alarmas: AsyncSession = Depends(get_db_alarmas), db_or
 app.include_router(alarms_router, prefix="/alarms", tags=["alarms"])
 app.include_router(bingx_router, prefix="/bingx", tags=["bingx"])
 app.include_router(strateger_router, prefix="/strateger", tags=["strateger"])
-
 
