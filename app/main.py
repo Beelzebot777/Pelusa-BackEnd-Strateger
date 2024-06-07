@@ -1,4 +1,4 @@
-from fastapi import FastAPI, Depends, HTTPException
+from fastapi import FastAPI, Depends, HTTPException, Request
 from fastapi.responses import JSONResponse
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.sql import text
@@ -47,6 +47,18 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+@app.exception_handler(404)
+async def not_found_handler(request: Request, exc: HTTPException):
+    client_ip = request.client.host
+    requested_url = str(request.url)
+    user_agent = request.headers.get('user-agent', 'unknown')
+    logger.warning(f"404 Not Found: {requested_url} from IP: {client_ip} with User-Agent: {user_agent}")
+    return JSONResponse(
+        status_code=404,
+        content={"detail": "Not Found"}
+    )
+
 
 @app.get("/status-server", tags=["health"])
 async def health_check(db_alarmas: AsyncSession = Depends(get_db_alarmas), db_ordenes: AsyncSession = Depends(get_db_ordenes)):
