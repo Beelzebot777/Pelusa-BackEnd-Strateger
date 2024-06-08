@@ -60,6 +60,93 @@ async def get_k_line_data(symbol, interval, limit, start_time, end_time):
     paramsStr = parse_param(paramsMap)
     return send_request(method, path, paramsStr, payload)
 
+async def get_balance():
+    """
+    Get asset information of users Perpetual Account
+
+    Returns:
+        The balance of the user.
+    """
+    payload = {}
+    path = '/openApi/swap/v2/user/balance'
+    method = "GET"
+    paramsMap = {
+        "timestamp": str(int(time.time() * 1000))
+    }
+    paramsStr = parse_param(paramsMap)
+    return send_request(method, path, paramsStr, payload)
+
+async def get_positions():
+    """
+    Retrieves the user's positions.
+
+    Returns:
+        The response from the API call.
+    """
+    payload = {}
+    path = '/openApi/swap/v2/user/positions'
+    method = "GET"
+    paramsMap = {
+        "recvWindow": "0",    
+        "timestamp": str(int(time.time() * 1000))
+    }
+    paramsStr = parse_param(paramsMap)
+    return send_request(method, path, paramsStr, payload)
+
+async def get_income_acc():
+    """
+    Retrieves the income account information.
+    If neither startTime nor endTime is sent, only the data of the last 7 days will be returned.
+    If the incomeType is not sent, return all types of account profit and loss fund flow.
+    Only keep the last 3 months data.
+
+    Returns:
+        The response from the API call.
+    """
+    payload = {}
+    path = '/openApi/swap/v2/user/income'
+    method = "GET"
+    paramsMap = {    
+        "timestamp": str(int(time.time() * 1000))
+    }
+    paramsStr = parse_param(paramsMap)
+    return send_request(method, path, paramsStr, payload)
+
+async def get_all_orders():
+    """
+    Query the user's historical orders (order status is completed or canceled).
+    The maximum query time range shall not exceed 7 days
+    Query data within the last 7 days by default
+    
+    Returns:
+        The response from the API call.
+    """
+    payload = {}
+    path = '/openApi/swap/v2/trade/allOrders'
+    method = "GET"
+    paramsMap = {                
+        "timestamp": str(int(time.time() * 1000))
+    }
+    paramsStr = parse_param(paramsMap)
+    return send_request(method, path, paramsStr, payload)
+
+async def get_full_all_orders():
+    """
+    Query the user's historical orders (order status is fully executed, pending, newly created, partially executed, or cancelled.).
+
+    Returns:
+        The response from the API call.
+    """
+    payload = {}
+    path = '/openApi/swap/v1/trade/fullOrder'
+    method = "GET"
+    paramsMap = {    
+        "timestamp": str(int(time.time() * 1000))
+    }
+    paramsStr = parse_param(paramsMap)
+    return send_request(method, path, paramsStr, payload)
+
+
 #------------------------------------------------------------
 #------------------- Funciones auxiliares -------------------
 #------------------------------------------------------------
