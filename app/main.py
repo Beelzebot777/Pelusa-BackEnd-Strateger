@@ -35,19 +35,22 @@ async def lifespan(app: FastAPI):
         logger.error(f"Error during startup: {e}")
         raise
     finally:
-        logger.info("Shutting down...")
-        await close_db_connections()  # Asegúrate de cerrar las conexiones aquí
+        logger.info("Shutting down...")    
+        try:
+            await close_db_connections()  # Asegúrate de cerrar las conexiones aquí
+        except Exception as e:
+            logger.error(f"Error closing database connections: {e}")
 
 #------------------------------------------------------- FASTAPI -------------------------------------------------------
 app = FastAPI(lifespan=lifespan)
-
 #------------------------------------------------------- MIDDLEWARE ----------------------------------------------------
+
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["http://localhost:3000"],  # Permite solicitudes desde el frontend
     allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
+    allow_methods=["GET", "POST"],  # Permite solo métodos necesarios
+    allow_headers=["Authorization", "Content-Type"],  # Permite solo encabezados necesarios
 )
 
 # Añadir el middleware de IPs permitidas
