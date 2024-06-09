@@ -29,7 +29,7 @@ async def webhook(request: Request, alarm_data: AlarmCreate, db: AsyncSession = 
         saved_alarm = await save_alarm(db, variables, raw_data)
         logger.info(f"Alarm saved in DB, with Id: {saved_alarm.id}")
 
-        await crear_operacion(db_ordenes, variables)
+        await crear_operacion(variables)
 
         return AlarmResponse.from_orm(saved_alarm)
     except HTTPException:

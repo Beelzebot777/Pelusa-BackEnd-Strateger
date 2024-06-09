@@ -6,7 +6,7 @@ from app.bingx.api import make_order, close_all_positions
 from loguru import logger
 
 
-async def crear_operacion(db_ordenes, variables):
+async def crear_operacion(variables):
     type_operation = variables.get('Order', '').lower()
     quantity = variables.get('Quantity')
     
