@@ -1,14 +1,14 @@
 # Path: app/alarms/routes.py
 
-from fastapi import APIRouter, Depends, HTTPException, Request, Query
-from sqlalchemy.ext.asyncio import AsyncSession
-from app.siteground.database import get_db_alarmas
-from app.alarms.schemas import AlarmCreate, AlarmResponse
-from app.alarms.crud import save_alarm, get_alarms
-from app.strateger.utils import crear_operacion
-from app.utils.ip_check import is_ip_allowed
-from loguru import logger
-from typing import List
+from fastapi import APIRouter, Depends, HTTPException, Request, Query       #FastAPI           
+from sqlalchemy.ext.asyncio import AsyncSession                             #Base de datos        
+from app.siteground.database import get_db_alarmas                          #Base de datos
+from app.alarms.schemas import AlarmCreate, AlarmResponse                   #Schemas   
+from app.alarms.crud import save_alarm, get_alarms                          #Base de datos
+#from app.strateger.utils import crear_operacion                            #Operaciones    
+from app.utils.ip_check import is_ip_allowed                                #Seguridad
+from loguru import logger                                                   #Logging
+from typing import List                                                     #Tipado                                 
 
 router = APIRouter()
 
@@ -29,7 +29,7 @@ async def webhook(request: Request, alarm_data: AlarmCreate, db: AsyncSession = 
         saved_alarm = await save_alarm(db, variables, raw_data)
         logger.info(f"Alarm saved in DB, with Id: {saved_alarm.id}")
 
-        await crear_operacion(variables)
+        #await crear_operacion(variables)
 
         return AlarmResponse.from_orm(saved_alarm)
     except HTTPException:
