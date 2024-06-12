@@ -6,10 +6,10 @@ from typing import Optional
 
 class StrategyBase(BaseModel):
     name: str
-    isOn: bool
-    apiKey: str
-    secretKey: str
-    ticker: str
+    isOn:  Optional[bool] = None
+    apiKey: Optional[str] = None
+    secretKey: Optional[str] = None
+    ticker: Optional[str] = None
     resultadoAcc: Optional[str] = None
     description: Optional[str] = None
     longEntryOrder: Optional[str] = None

@@ -6,11 +6,11 @@ class Strategy(BaseEstrategias):
     __tablename__ = 'tbl_strategies'
 
     id = Column(Integer, primary_key=True, index=True)
-    name = Column(String(100), nullable=False)
-    isOn = Column(Boolean, nullable=False)
-    apiKey = Column(String(255), nullable=False)
-    secretKey = Column(String(255), nullable=False)
-    ticker = Column(String(10), nullable=False)
+    name = Column(String(100), nullable=True)
+    isOn = Column(Boolean, nullable=True)
+    apiKey = Column(String(255), nullable=True)
+    secretKey = Column(String(255), nullable=True)
+    ticker = Column(String(10), nullable=True)
     resultadoAcc = Column(String(100), nullable=True)
     description = Column(String(500), nullable=True)  # Cambiado a Text
     longEntryOrder = Column(String(100), nullable=True)
