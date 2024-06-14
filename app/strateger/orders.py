@@ -18,6 +18,7 @@ async def crear_operacion(variables):
     #TODO Si el 'order' de la alarma es 'indicator open long' o 'indicator open short'. NO se realizara ninguna operacion. Solo guarda la alarma
     #TODO Si el 'order' de la alarma es 'indicator close long' o 'indicator close short'. NO se realizara ninguna operacion. Solo guarda la alarma
     
+    
     #TODO en el caso de 'order' de la alarma sea 'order...' Se realizara una Operacion y se guardara la alarma en la BD.
             
     
@@ -32,20 +33,22 @@ async def crear_operacion(variables):
         
         #? Ejemplo de funcion: make_order("100", "BTC-USDT", "BUY", "LONG", "MARKET", "0.001") Donde los parametros son: Leverage, Ticker, Side, Type, Order, Quantity.
         #? Esta informacion esta en resultado_tbl_strategies y son los valores de:
-            #?- 'longLeverage': Es el Leverage
+            #?- 'longLeverage': Es el Leverage            
+            #?- 'ticker': Es el Ticker
+            #?- 'Side y Tipe': Se establece manualmente como BUY y como LONG
+            #?- 'Order': Se establece como MARKET por defecto.
             #?- 'longQuantity': Es el Quantity
-            #?- 
-
-
+            #* En un futuro se agregaran mas funcionalidades.
+        
     
     #TODO Si el 'order' de la alarma es 'order close long' o 'order close short' se INTENTARA cerrar todas las operaciones abiertas en la direccion del 'order', bajo las siguientes condiciones.
-        # Se cerraran todas las operaciones de la estrategia.
+        # Si 'order' es 'order close long' se cerraran todas las operaciones de la estrategia con el 'name' y 'ticker' de la alarma.        
     
     
+    #! LO MISMO DEBERIAMOS PERO CON ADAPTACIONES DEBERIAMOS HACER EN EL CASO DE QUE LAS ALARMAS SEAN DE 'indicator open long' o 'indicator open short' o 'indicator close long' o 'indicator close short'
     
     
-    
-    
+    #----------------------------------------------- EL SIGUIENTE CODIGO DEBERIA SER REEMPLAZADO POR EL CODIGO DE ARRIBA ------------------------------------------------
     
     type_operation = variables.get('Order', '').lower()
     quantity = variables.get('Quantity')
