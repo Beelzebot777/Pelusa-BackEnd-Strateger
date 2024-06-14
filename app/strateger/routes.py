@@ -8,10 +8,6 @@ from app.strateger.schemas import StrategyCreate, StrategyUpdate, Strategy
 
 router = APIRouter()
 
-@router.post("/insert", response_model=Strategy)
-async def create_strategy(strategy: StrategyCreate, db: AsyncSession = Depends(get_db_estrategias)):
-    return await crud.create_strategy(db, strategy)
-
 @router.get("/get/{strategy_id}", response_model=Strategy)
 async def read_strategy(strategy_id: int, db: AsyncSession = Depends(get_db_estrategias)):
     db_strategy = await crud.get_strategy(db, strategy_id)
@@ -22,6 +18,10 @@ async def read_strategy(strategy_id: int, db: AsyncSession = Depends(get_db_estr
 @router.get("/list", response_model=list[Strategy])
 async def read_strategies(skip: int = 0, limit: int = 10, db: AsyncSession = Depends(get_db_estrategias)):
     return await crud.get_strategies(db, skip=skip, limit=limit)
+
+@router.post("/insert", response_model=Strategy)
+async def create_strategy(strategy: StrategyCreate, db: AsyncSession = Depends(get_db_estrategias)):
+    return await crud.create_strategy(db, strategy)
 
 @router.put("/update/{strategy_id}", response_model=Strategy)
 async def update_strategy(strategy_id: int, strategy: StrategyUpdate, db: AsyncSession = Depends(get_db_estrategias)):
