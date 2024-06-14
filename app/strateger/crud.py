@@ -4,7 +4,9 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
 from app.strateger.models import Strategy
 from app.strateger.schemas import StrategyCreate, StrategyUpdate
+from app.alarms.models import Alarm  # Importamos el modelo de Alarm para consultas relacionadas con alarmas
 
+# Funciones CRUD para Strategy
 async def create_strategy(db: AsyncSession, strategy: StrategyCreate):
     db_strategy = Strategy(**strategy.dict())
     db.add(db_strategy)
@@ -35,3 +37,9 @@ async def delete_strategy(db: AsyncSession, strategy_id: int):
         await db.delete(db_strategy)
         await db.commit()
     return db_strategy
+
+async def get_strategy_by_name_and_ticker(db: AsyncSession, strategy_name: str, ticker: str):
+    result = await db.execute(
+        select(Strategy).where(Strategy.name == strategy_name).where(Strategy.ticker == ticker)
+    )
+    return result.scalars().first()

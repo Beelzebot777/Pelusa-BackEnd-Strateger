@@ -1,80 +1,79 @@
-#Path: app/strateger/orders.py
+# Path: app/strateger/orders.py
 
 from app.bingx.api import make_order, close_all_positions
-
 from loguru import logger
+from sqlalchemy.ext.asyncio import AsyncSession
+from app.strateger.crud import get_strategy_by_name_and_ticker
+from app.alarms.crud import get_latest_alarm_with_entry
+from app.strateger.models import Strategy  # Asegúrate de importar el modelo Strategy
 
-
-async def crear_operacion(variables):
-    '''
+async def crear_operacion(variables: dict, db_alarmas: AsyncSession, db_estrategias: AsyncSession):
+    """
     Esta funcion se encarga de crear una operacion en el exchange, dependiendo de la orden que se reciba.
-    
+
     Parameters:
         - variables (dict): Diccionario de la alarma con las variables necesarias para crear una operacion en el exchange.
+        - db_alarmas (AsyncSession): Sesión de base de datos para consultar alarmas.
+        - db_estrategias (AsyncSession): Sesión de base de datos para consultar estrategias.
     Returns:
         - None
-    '''
-    
-    #TODO Si el 'order' de la alarma es 'indicator open long' o 'indicator open short'. NO se realizara ninguna operacion. Solo guarda la alarma
-    #TODO Si el 'order' de la alarma es 'indicator close long' o 'indicator close short'. NO se realizara ninguna operacion. Solo guarda la alarma
-    
-    
-    #TODO en el caso de 'order' de la alarma sea 'order...' Se realizara una Operacion y se guardara la alarma en la BD.
-            
-    
-    #TODO Si el 'order' de la alarma es 'order open long' o 'order open short' se INTENTARA abrir una operacion en la direccion del 'order', bajo las siguientes condiciones:
-        #! resultado_tbl_strategies = !Extraer de 'BD Desarrollo-Estrategias' todas las variable de la tabla: 'tbl_strategies' filtradas por ''lower('name')'' y por 'ticker'. siendo 'name' el nombre de la estrategia en la BD.
-        
-        #! resultado_alarma_indicador = Buscar la ultima alarma con el mismo 'name' (Strategy), 'ticker', 'Long Entry Order' de la estrategia y guardar sus variables.
-        #   *si en resultado_alarma_indicador Tenemos una alarma con 'Exit_Price_Alert' no NULL, entonces NO se realiza la operacion.
-        #   *si en resultado_alarma_indicador Tenemos una alarma con 'Entry_Price_Alert' no NULL, entonces SI se realiza la operacion.
-        
-        #? Para abrir la operacion utilizaremos la informacion guardada en la estrategia.
-        
-        #? Ejemplo de funcion: make_order("100", "BTC-USDT", "BUY", "LONG", "MARKET", "0.001") Donde los parametros son: Leverage, Ticker, Side, Type, Order, Quantity.
-        #? Esta informacion esta en resultado_tbl_strategies y son los valores de:
-            #?- 'longLeverage': Es el Leverage            
-            #?- 'ticker': Es el Ticker
-            #?- 'Side y Tipe': Se establece manualmente como BUY y como LONG
-            #?- 'Order': Se establece como MARKET por defecto.
-            #?- 'longQuantity': Es el Quantity
-            #* En un futuro se agregaran mas funcionalidades.
-        
-    
-    #TODO Si el 'order' de la alarma es 'order close long' o 'order close short' se INTENTARA cerrar todas las operaciones abiertas en la direccion del 'order', bajo las siguientes condiciones.
-        # Si 'order' es 'order close long' se cerraran todas las operaciones de la estrategia con el 'name' y 'ticker' de la alarma.        
-    
-    
-    #! LO MISMO DEBERIAMOS PERO CON ADAPTACIONES DEBERIAMOS HACER EN EL CASO DE QUE LAS ALARMAS SEAN DE 'indicator open long' o 'indicator open short' o 'indicator close long' o 'indicator close short'
-    
-    
-    #----------------------------------------------- EL SIGUIENTE CODIGO DEBERIA SER REEMPLAZADO POR EL CODIGO DE ARRIBA ------------------------------------------------
-    
+    """
     type_operation = variables.get('Order', '').lower()
-    quantity = variables.get('Quantity')
-    
-    logger.info(f"Creando operación type_operation: {variables['Order']}")
+    ticker = variables.get('Ticker')
+    strategy_name = variables.get('Strategy')
 
-    if type_operation == 'order open long':
-        result = await make_order("100", "BTC-USDT", "BUY", "LONG", "MARKET", "0.001")
-        logger.info(f"Operacion ejecutada")
-        logger.debug(f"Resultado de la orden: {result}")
-   
-        
-    elif type_operation == 'order open short':
-        result = await make_order("100", "BTC-USDT", "SELL", "SHORT", "MARKET", "0.001")
-        logger.info(f"Operacion ejecutada")
-        logger.info(f"Resultado de la orden: {result}")
-     
-    elif type_operation == 'order close long':
-        result = await close_all_positions("BTC-USDT")
-        logger.info("Cerrando todas las operaciones ")
-        logger.debug(f"Resultado de cerrar todas las posiciones: {result}")
-        
-    elif type_operation == 'order close short':
-        result = await close_all_positions("BTC-USDT")
-        logger.info("Cerrando todas las operaciones ")
-        logger.debug(f"Resultado de cerrar todas las posiciones: {result}")
-        
+    logger.info(f"Creando operación: {variables['Order']} para la estrategia: {strategy_name} y el ticker: {ticker}")
+
+    # Si la orden es un indicador de apertura o cierre, no se realiza ninguna operación
+    if type_operation in ['indicator open long', 'indicator open short', 'indicator close long', 'indicator close short']:
+        logger.info(f"Operación de tipo indicador no requiere acción: {variables['Order']}")
+        return
+
+    # Obtener la estrategia de la base de datos de estrategias
+    strategy = await get_strategy_by_name_and_ticker(db_estrategias, strategy_name, ticker)
+    logger.debug(f"Estrategia encontrada: {strategy}")
+    if not strategy:
+        logger.warning(f"Estrategia no encontrada para el nombre: {strategy_name} y el ticker: {ticker}")
+        return
+
+    if type_operation in ['order open long', 'order open short']:
+        await open_order(variables, strategy, db_alarmas)
+    elif type_operation in ['order close long', 'order close short']:
+        await close_order(variables, strategy, db_alarmas)
     else:
         logger.warning(f"Orden no reconocida: {variables['Order']}")
+
+async def open_order(variables: dict, strategy: Strategy, db_alarmas: AsyncSession):
+    
+    logger.info(f"Abriendo una operación para la estrategia: {strategy.name} y el ticker: {strategy.ticker}")
+    
+    #! APARTIR DE AQUI DEBERIAMOS CORREGIR EL CODIGO, YA QUE PARECE SER QUE LA LOGICA NO ESTA BIEN IMPLEMENTADA
+    # Buscar la última alarma con la misma estrategia y ticker que tenga un Entry_Price_Alert no nulo
+    latest_alarm = await get_latest_alarm_with_entry(db_alarmas, strategy.name, strategy.ticker, 'longEntryOrder')
+    
+    logger.debug(f"Última alarma con Entry_Price_Alert no nulo: {latest_alarm}")
+
+    
+    if latest_alarm and latest_alarm.Exit_Price_Alert is None:
+        
+        logger.info(f"La última alarma con Entry_Price_Alert no nulo no tiene Exit_Price_Alert: {latest_alarm}")
+        
+        leverage = strategy.longLeverage
+        quantity = strategy.longQuantity
+        ticker = strategy.ticker
+        
+        logger.debug(f"Leverage: {leverage}, Quantity: {quantity}, Ticker: {ticker}")
+
+        if variables.get('Order').lower() == 'order open long':
+            result = await make_order(leverage, ticker, "BUY", "LONG", "MARKET", quantity)
+        else:
+            result = await make_order(leverage, ticker, "SELL", "SHORT", "MARKET", quantity)
+
+        logger.info(f"Operacion ejecutada: {variables['Order']} para {ticker}")
+        logger.debug(f"Resultado de la orden: {result}")
+
+async def close_order(variables: dict, strategy: Strategy, db_alarmas: AsyncSession):
+    ticker = strategy.ticker
+    result = await close_all_positions(ticker)
+    logger.info(f"Cerrando todas las operaciones para {ticker}")
+    logger.debug(f"Resultado de cerrar todas las posiciones: {result}")
