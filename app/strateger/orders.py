@@ -21,59 +21,87 @@ async def crear_operacion(variables: dict, db_alarmas: AsyncSession, db_estrateg
     type_operation = variables.get('Order', '').lower()
     ticker = variables.get('Ticker')
     strategy_name = variables.get('Strategy')
-
-    logger.info(f"Creando operación: {variables['Order']} para la estrategia: {strategy_name} y el ticker: {ticker}")
-
+    temporalidad = variables.get('Temporalidad')        
+ 
     # Si la orden es un indicador de apertura o cierre, no se realiza ninguna operación
     if type_operation in ['indicator open long', 'indicator open short', 'indicator close long', 'indicator close short']:
         logger.info(f"Operación de tipo indicador no requiere acción: {variables['Order']}")
         return
 
     # Obtener la estrategia de la base de datos de estrategias
-    strategy = await get_strategy_by_name_and_ticker(db_estrategias, strategy_name, ticker)
-    logger.debug(f"Estrategia encontrada: {strategy}")
+    strategy = await get_strategy_by_name_and_ticker(db_estrategias, strategy_name, ticker)                
+        
     if not strategy:
         logger.warning(f"Estrategia no encontrada para el nombre: {strategy_name} y el ticker: {ticker}")
         return
 
-    if type_operation in ['order open long', 'order open short']:
-        await open_order(variables, strategy, db_alarmas)
-    elif type_operation in ['order close long', 'order close short']:
-        await close_order(variables, strategy, db_alarmas)
-    else:
-        logger.warning(f"Orden no reconocida: {variables['Order']}")
+    if strategy.isOn == False:
+        logger.warning(f"La estrategia {strategy.name} esta apagada.")
+        return
 
-async def open_order(variables: dict, strategy: Strategy, db_alarmas: AsyncSession):
-    
-    logger.info(f"Abriendo una operación para la estrategia: {strategy.name} y el ticker: {strategy.ticker}")
-    
-    #! APARTIR DE AQUI DEBERIAMOS CORREGIR EL CODIGO, YA QUE PARECE SER QUE LA LOGICA NO ESTA BIEN IMPLEMENTADA
-    # Buscar la última alarma con la misma estrategia y ticker que tenga un Entry_Price_Alert no nulo
-    latest_alarm = await get_latest_alarm_with_entry(db_alarmas, strategy.name, strategy.ticker, 'longEntryOrder')
-    
-    logger.debug(f"Última alarma con Entry_Price_Alert no nulo: {latest_alarm}")
+    #! Checkear la apiKey y la secretKey, ambas deberian estar encriptadas en la base de datos.
+    #! Al parecer la tabla de estrategias deberia tener una columna mas llamada currentLongPyramiding y currentShortPyramiding.    
 
-    
-    if latest_alarm and latest_alarm.Exit_Price_Alert is None:
-        
-        logger.info(f"La última alarma con Entry_Price_Alert no nulo no tiene Exit_Price_Alert: {latest_alarm}")
-        
-        leverage = strategy.longLeverage
-        quantity = strategy.longQuantity
-        ticker = strategy.ticker
-        
-        logger.debug(f"Leverage: {leverage}, Quantity: {quantity}, Ticker: {ticker}")
-
-        if variables.get('Order').lower() == 'order open long':
-            result = await make_order(leverage, ticker, "BUY", "LONG", "MARKET", quantity)
+    if type_operation in ['order open long']:        
+        if strategy.longEntryOrder == temporalidad:            
+            ultima_alarm_indicator_open_long = await get_latest_alarm_with_entry(db_alarmas, strategy.name, strategy.ticker, 'indicator open long', strategy.longEntryIndicator)               
+            ultima_alarm_indicator_close_long = await get_latest_alarm_with_entry(db_alarmas, strategy.name, strategy.ticker, 'indicator close long', strategy.longCloseIndicator)               
+            
+            logger.debug(f"Ultima alarma con indicador de apertura de posición larga: {ultima_alarm_indicator_open_long.id}")
+            logger.debug(f"Ultima alarma con indicador de cierre de posición larga: {ultima_alarm_indicator_close_long.id}")
+            
+            if int(ultima_alarm_indicator_open_long.id) > int(ultima_alarm_indicator_close_long.id):
+                logger.info(f"Significa que se encontro primero una alarma de apertura de posición larga y luego una de cierre de posición larga.")
+                logger.info(f"Se procede a abrir una posición larga.")
+                
+                result = await make_order(strategy.longLeverage, convert_ticker(ticker), "BUY", "LONG", "MARKET", strategy.longQuantity)
+                logger.debug(f"Resultado de abrir una posición larga: {result}")
+                                            
+            else:
+                logger.warning(f"La ultima alarma de apertura de posición larga es mayor que la ultima alarma de cierre de posición larga.")
+                logger.warning(f"Esto significa que en base a nuestra estrategia aun no se puede abrir una posición larga.")
+                return                                
         else:
-            result = await make_order(leverage, ticker, "SELL", "SHORT", "MARKET", quantity)
-
-        logger.info(f"Operacion ejecutada: {variables['Order']} para {ticker}")
-        logger.debug(f"Resultado de la orden: {result}")
-
-async def close_order(variables: dict, strategy: Strategy, db_alarmas: AsyncSession):
-    ticker = strategy.ticker
-    result = await close_all_positions(ticker)
-    logger.info(f"Cerrando todas las operaciones para {ticker}")
-    logger.debug(f"Resultado de cerrar todas las posiciones: {result}")
+            logger.warning(f"La orden no es valida para la estrategia")
+            return
+    
+    elif type_operation in ['order open short']:
+        if strategy.shortEntryOrder == temporalidad:
+            ultima_alarm_indicator_open_short = await get_latest_alarm_with_entry(db_alarmas, strategy.name, strategy.ticker, 'indicator open short', strategy.shortEntryIndicator)
+            ultima_alarm_indicator_close_short = await get_latest_alarm_with_entry(db_alarmas, strategy.name, strategy.ticker, 'indicator close short', strategy.shortCloseIndicator)
+            
+            logger.debug(f"Ultima alarma con indicador de apertura de posición corta: {ultima_alarm_indicator_open_short.id}")
+            logger.debug(f"Ultima alarma con indicador de cierre de posición corta: {ultima_alarm_indicator_close_short.id}")
+            
+            if int(ultima_alarm_indicator_open_short.id) > int(ultima_alarm_indicator_close_short.id):
+                logger.info(f"Significa que se encontro primero una alarma de apertura de posición corta y luego una de cierre de posición corta.")
+                logger.info(f"Se procede a abrir una posición corta.")                                            
+                result = await make_order(strategy.shortLeverage, convert_ticker(ticker), "SELL", "SHORT", "MARKET", strategy.shortQuantity) 
+                logger.debug(f"Resultado de abrir una posición corta: {result}")                  
+                
+            else:
+                logger.warning(f"La ultima alarma de apertura de posición corta es mayor que la ultima alarma de cierre de posición corta.")
+                logger.warning(f"Esto significa que en base a nuestra estrategia aun no se puede abrir una posición corta.")
+                return
+    
+    elif type_operation in ['order close long']:
+        if strategy.longCloseOrder == temporalidad:
+            logger.info(f"Se procede a cerrar todas las posiciones largas.")
+            result = await close_all_positions(convert_ticker(ticker))          #! ESTO SOLO DEBERIA CERRAR LAS POSICIONES LARGAS NO TODAS LAS POSICIONES
+            logger.info(f"Cerrando todas las operaciones para {ticker}")
+            logger.debug(f"Resultado de cerrar todas las posiciones: {result}")
+    
+    elif type_operation in ['order close short']:
+        if strategy.shortCloseOrder == temporalidad:
+            logger.info(f"Se procede a cerrar todas las posiciones cortas.")
+            result = await close_all_positions(convert_ticker(ticker))          #! ESTO SOLO DEBERIA CERRAR LAS POSICIONES CORTAS NO TODAS LAS POSICIONES
+            logger.info(f"Cerrando todas las operaciones para {ticker}")
+            logger.debug(f"Resultado de cerrar todas las posiciones: {result}")
+    else:
+        logger.error(f"La orden no es valida para la estrategia")
+        return
+                
+def convert_ticker(ticker):
+    if ticker == 'BTCUSDT.PS':
+        return 'BTC-USDT'
+    return ticker                                                        
