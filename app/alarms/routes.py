@@ -6,6 +6,8 @@ from app.siteground.database import get_db_alarmas, get_db_estrategias      #Bas
 from app.alarms.schemas import AlarmCreate, AlarmResponse                   #Schemas   
 from app.alarms.crud import save_alarm, get_alarms                          #Base de datos
 from app.utils.ip_check import is_ip_allowed                                #Seguridad
+from app.alarms.utils import convierte_temporalidad                         #Utilidades
+
 from loguru import logger                                                   #Logging
 from typing import List                                                     #Tipado         
 from app.strateger.orders import crear_operacion                            #Operaciones                        
@@ -24,6 +26,10 @@ async def webhook(request: Request, alarm_data: AlarmCreate, db_alarmas: AsyncSe
         logger.debug(f"Alarm Data: {alarm_data.json()}")
 
         variables = alarm_data.dict()
+        
+        # Convertir la temporalidad
+        variables['Temporalidad'] = convierte_temporalidad(variables.get('Temporalidad'))
+        
         raw_data = alarm_data.json()
 
         saved_alarm = await save_alarm(db_alarmas, variables, raw_data)
