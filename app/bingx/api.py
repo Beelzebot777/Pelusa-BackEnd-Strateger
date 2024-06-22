@@ -8,6 +8,7 @@ from hashlib import sha256
 import os
 from dotenv import load_dotenv
 from datetime import datetime
+from loguru import logger
 
 # Cargar variables de entorno
 load_dotenv()
@@ -112,27 +113,47 @@ async def get_income_acc():
     paramsStr = parse_param(paramsMap)
     return send_request(method, path, paramsStr, payload)
 
-async def get_all_orders():
+async def get_all_orders(limit: int, offset: int):
     """
     Query the user's historical orders (order status is completed or canceled).
-    The maximum query time range shall not exceed 7 days
-    Query data within the last 7 days by default
-    
+    The maximum query time range shall not exceed 7 days.
+    Query data within the last 7 days by default.
+
+    Args:
+        limit (int): The number of orders to fetch.
+        offset (int): The offset for pagination.
+
     Returns:
         The response from the API call.
     """
     payload = {}
     path = '/openApi/swap/v2/trade/allOrders'
     method = "GET"
-    paramsMap = {                
-        "timestamp": str(int(time.time() * 1000))
+
+    # Obtener el timestamp actual
+    timestamp = str(int(time.time() * 1000))
+
+    # Calcular el rango de tiempo basado en el offset
+    end_time = timestamp
+    start_time = str(int(time.time() * 1000) - 24 * 60 * 60 * 1000 * 7 * (offset + 1))  # Offset en semanas
+
+    paramsMap = {
+        "limit": str(limit),
+        "startTime": start_time,
+        "endTime": end_time,
+        "timestamp": timestamp
     }
     paramsStr = parse_param(paramsMap)
+    logger.debug(f"")
     return send_request(method, path, paramsStr, payload)
 
-async def get_full_all_orders():
+async def get_full_all_orders(limit: int, offset: int):
     """
     Query the user's historical orders (order status is fully executed, pending, newly created, partially executed, or cancelled.).
+
+    Args:
+        limit (int): The number of orders to fetch.
+        offset (int): The offset for pagination.
 
     Returns:
         The response from the API call.
@@ -140,11 +161,21 @@ async def get_full_all_orders():
     payload = {}
     path = '/openApi/swap/v1/trade/fullOrder'
     method = "GET"
-    paramsMap = {    
-        "timestamp": str(int(time.time() * 1000))
+
+    # Obtener el timestamp actual
+    timestamp = str(int(time.time() * 1000))
+
+    # Obtener el tiempo de inicio y fin basado en el offset
+    end_time = timestamp
+    start_time = str(int(time.time() * 1000) - 24 * 60 * 60 * 1000 * (offset + 1))  # Offset en días
+
+    paramsMap = {
+        "limit": str(limit),        
+        "timestamp": timestamp
     }
     paramsStr = parse_param(paramsMap)
     return send_request(method, path, paramsStr, payload)
+
 
 
 #------------------------------------------------------------
