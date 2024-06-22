@@ -125,16 +125,17 @@ async def get_income_acc_endpoint(request: Request):
         raise HTTPException(status_code=400, detail=str(e))
 
 @router.get('/get-all-orders')
-async def get_all_orders_endpoint(request: Request):
+async def get_all_orders_endpoint(request: Request, limit: int = 500, offset: int = 0):
     """
     Get user's historical orders information
 
     Args:
         request (Request): The incoming request object.
+        limit (int): The number of orders to fetch.
+        offset (int): The offset for pagination.
 
     Returns:
         The historical orders information.
-        
 
     Raises:
         HTTPException: If an error occurs while fetching the historical orders information.
@@ -147,22 +148,24 @@ async def get_all_orders_endpoint(request: Request):
     await is_ip_allowed(client_ip)
     
     try:
-        result = await get_all_orders()        
+        result = await get_all_orders(limit, offset)
+        logger.debug(f"result: {result}")
         return result
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
 
 @router.get('/get-all-full-orders')
-async def get_full_all_orders_endpoint(request: Request):
+async def get_full_all_orders_endpoint(request: Request, limit: int = 500, offset: int = 0):
     """
     Get user's historical orders information
 
     Args:
         request (Request): The incoming request object.
+        limit (int): The number of orders to fetch.
+        offset (int): The offset for pagination.
 
     Returns:
         The historical orders information.
-        
 
     Raises:
         HTTPException: If an error occurs while fetching the historical orders information.
@@ -175,7 +178,8 @@ async def get_full_all_orders_endpoint(request: Request):
     await is_ip_allowed(client_ip)
     
     try:
-        result = await get_full_all_orders()        
+        result = await get_full_all_orders(limit, offset)     
+        logger.debug(f"result: {result}")  
         return result
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
