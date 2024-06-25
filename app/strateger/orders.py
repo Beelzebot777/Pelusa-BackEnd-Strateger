@@ -32,7 +32,7 @@ async def crear_operacion(variables: dict, db_alarmas: AsyncSession, db_estrateg
     strategy = await get_strategy_by_name_and_ticker(db_estrategias, strategy_name, ticker)                
         
     if not strategy:
-        logger.warning(f"Estrategia no encontrada para el nombre: {strategy_name} y el ticker: {ticker}")
+        logger.warning(f"Estrategia no encontrada para el nombre: {strategy_name} O por el ticker: {ticker}")
         return
 
     if strategy.isOn == False:
