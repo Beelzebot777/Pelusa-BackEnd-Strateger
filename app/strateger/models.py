@@ -13,6 +13,8 @@ class Strategy(BaseEstrategias):
     ticker = Column(String(10), nullable=True)
     resultadoAcc = Column(String(100), nullable=True)
     description = Column(String(500), nullable=True)  # Cambiado a Text
+    onStartDate = Column(String(50), nullable=True)  # Nuevo campo
+    offEndDate = Column(String(50), nullable=True)  # Nuevo campo
     longEntryOrder = Column(String(100), nullable=True)
     longCloseOrder = Column(String(100), nullable=True)
     longEntryIndicator = Column(String(100), nullable=True)

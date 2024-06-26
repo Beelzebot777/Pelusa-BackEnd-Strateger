@@ -4,7 +4,6 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
 from app.strateger.models import Strategy
 from app.strateger.schemas import StrategyCreate, StrategyUpdate
-from app.alarms.models import Alarm  # Importamos el modelo de Alarm para consultas relacionadas con alarmas
 
 # Funciones CRUD para Strategy
 async def create_strategy(db: AsyncSession, strategy: StrategyCreate):

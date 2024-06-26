@@ -1,4 +1,4 @@
-# Path: app/siteground/schemas.py
+# Path: app/strateger/schemas.py
 # Description: Pydantic schemas for orders
 
 from pydantic import BaseModel
@@ -12,6 +12,8 @@ class StrategyBase(BaseModel):
     ticker: Optional[str] = None
     resultadoAcc: Optional[str] = None
     description: Optional[str] = None
+    onStartDate: Optional[str] = None  # Nuevo campo
+    offEndDate: Optional[str] = None  # Nuevo campo
     longEntryOrder: Optional[str] = None
     longCloseOrder: Optional[str] = None
     longEntryIndicator: Optional[str] = None
@@ -45,12 +47,10 @@ class StrategyInDBBase(StrategyBase):
     id: int
 
     class Config:
-        from_attributes = True
+        orm_mode = True
 
 class Strategy(StrategyInDBBase):
     pass
 
 class StrategyInDB(StrategyInDBBase):
     pass
-
-
