@@ -2,7 +2,7 @@
 # Description: Routes for BingX exchange
 
 from fastapi import APIRouter, Depends, HTTPException, Request
-from app.bingx.api import get_k_line_data, get_balance_spot, get_balance_perp_usdtm, get_positions, get_income_acc, get_all_orders, get_full_all_orders
+from app.bingx.api import get_k_line_data, get_balance_spot,get_balance_perp_coinm, get_balance_perp_usdtm, get_positions, get_income_acc, get_all_orders, get_full_all_orders
 from loguru import logger
 from app.utils.ip_check import is_ip_allowed
 
@@ -39,6 +39,28 @@ async def get_k_line_data_endpoint(request: Request, symbol: str, interval: str,
         return data
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
+
+@router.get('/get-balance-perp-coinm')
+async def get_balance_perp_coinm_endpoint(request: Request):
+    """
+    Get asset information of user‘s PERP COIN-M Account
+    """
+    
+    client_ip = request.client.host
+    
+    logger.info(f"Fetching balance from {client_ip}")
+
+    # Verificar si la IP está permitida
+    await is_ip_allowed(client_ip)
+    
+    try:
+        result = await get_balance_perp_coinm()
+        return result
+    except Exception as e:
+        logger.error(f"Error fetching PERP COIN-M balance: {str(e)}")
+        raise HTTPException(status_code=400, detail=str(e))
+    
+    
     
 @router.get('/get-balance-spot')
 async def get_balance_spot_endpoint(request: Request):

@@ -190,8 +190,19 @@ async def get_balance_spot():
     paramsStr = parse_param(paramsMap)
     return send_request(method, path, paramsStr, payload)
 
+#!----------------------------------------------------------------------------------
+#!----------------------- Main Functions COIN-M Perp Futures -----------------------
+#!----------------------------------------------------------------------------------
 
-
+async def get_balance_perp_coinm():
+    payload = {}
+    path = '/openApi/cswap/v1/user/balance'
+    method = "GET"
+    paramsMap = {        
+        "timestamp": str(int(time.time() * 1000))
+    }
+    paramsStr = parse_param(paramsMap)
+    return send_request(method, path, paramsStr, payload)
 
 #------------------------------------------------------------
 #------------------- Funciones auxiliares -------------------
