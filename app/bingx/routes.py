@@ -2,7 +2,7 @@
 # Description: Routes for BingX exchange
 
 from fastapi import APIRouter, Depends, HTTPException, Request
-from app.bingx.api import get_k_line_data, get_balance, get_positions, get_income_acc, get_all_orders, get_full_all_orders
+from app.bingx.api import get_k_line_data, get_balance_spot, get_balance_perp_usdtm, get_positions, get_income_acc, get_all_orders, get_full_all_orders
 from loguru import logger
 from app.utils.ip_check import is_ip_allowed
 
@@ -40,7 +40,27 @@ async def get_k_line_data_endpoint(request: Request, symbol: str, interval: str,
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
     
-@router.get('/get-balance')
+@router.get('/get-balance-spot')
+async def get_balance_spot_endpoint(request: Request):
+    """
+    Get asset information of user‘s Spot Account
+    """
+    
+    client_ip = request.client.host
+    
+    logger.info(f"Fetching balance from {client_ip}")
+
+    # Verificar si la IP está permitida
+    await is_ip_allowed(client_ip)
+ 
+    try:
+        result = await get_balance_spot()    
+        return result
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=str(e))
+    
+    
+@router.get('/get-balance-perp-usdtm')
 async def get_balance_endpoint(request: Request):
     """
     Get asset information of user‘s Perpetual Account
@@ -50,7 +70,19 @@ async def get_balance_endpoint(request: Request):
 
     Returns:
         The balance result.
-        
+    
+    Example Return:
+        - Balance Information:
+        - User ID: 875046285523701766
+        - Asset: USDT
+        - Balance: 252.9224 USDT
+        - Equity: 233.5737 USDT
+        - Unrealized Profit: -19.3487 USDT
+        - Realized Profit: -0.5324 USDT
+        - Available Margin: 127.3871 USDT
+        - Used Margin: 125.5353 USDT
+        - Freezed Margin: 0.0000 USDT
+        - Short UID: 5816495        
 
     Raises:
         HTTPException: If an error occurs while fetching the balance.
@@ -63,7 +95,7 @@ async def get_balance_endpoint(request: Request):
     await is_ip_allowed(client_ip)
     
     try:
-        result = await get_balance()    
+        result = await get_balance_perp_usdtm()    
         return result
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))

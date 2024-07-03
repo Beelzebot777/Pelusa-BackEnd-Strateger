@@ -17,9 +17,9 @@ APIURL = os.getenv("APIURL")
 APIKEY = os.getenv("APIKEY")
 SECRETKEY = os.getenv("SECRETKEY")
 
-#--------------------------------------------------------------
-#----------------------- Main Functions -----------------------
-#--------------------------------------------------------------
+#!----------------------------------------------------------------------------------
+#!----------------------- Main Functions USDT-M Perp Futures -----------------------
+#!----------------------------------------------------------------------------------
 
 async def make_order(leverage, symbol, side, positionSide, order_type, quantity):
     payload = {}
@@ -61,7 +61,7 @@ async def get_k_line_data(symbol, interval, limit, start_time, end_time):
     paramsStr = parse_param(paramsMap)
     return send_request(method, path, paramsStr, payload)
 
-async def get_balance():
+async def get_balance_perp_usdtm():
     """
     Get asset information of users Perpetual Account
 
@@ -175,6 +175,21 @@ async def get_full_all_orders(limit: int, offset: int):
     }
     paramsStr = parse_param(paramsMap)
     return send_request(method, path, paramsStr, payload)
+
+#!----------------------------------------------------------------------------------
+#!----------------------- Main Functions SPOT --------------------------------------
+#!----------------------------------------------------------------------------------
+
+async def get_balance_spot():
+    payload = {}
+    path = '/openApi/spot/v1/account/balance'
+    method = "GET"
+    paramsMap = {        
+        "timestamp": str(int(time.time() * 1000))
+    }
+    paramsStr = parse_param(paramsMap)
+    return send_request(method, path, paramsStr, payload)
+
 
 
 
