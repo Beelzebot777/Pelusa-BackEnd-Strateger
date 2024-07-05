@@ -18,6 +18,20 @@ APIKEY = os.getenv("APIKEY")
 SECRETKEY = os.getenv("SECRETKEY")
 
 #!----------------------------------------------------------------------------------
+#!------------------------------- Main Functions Generic ---------------------------
+#!----------------------------------------------------------------------------------
+
+async def get_ticker(symbol: str):
+    path = '/openApi/swap/v2/quote/ticker'
+    method = "GET"
+    paramsMap = {
+        "symbol": symbol,        
+        "timestamp": str(int(time.time() * 1000))
+    }
+    paramsStr = parse_param(paramsMap)
+    return send_request(method, path, paramsStr, {})
+
+#!----------------------------------------------------------------------------------
 #!----------------------- Main Functions USDT-M Perp Futures -----------------------
 #!----------------------------------------------------------------------------------
 
@@ -72,7 +86,7 @@ async def get_balance_perp_usdtm():
     path = '/openApi/swap/v2/user/balance'
     method = "GET"
     paramsMap = {
-        "timestamp": str(int(time.time() * 1000))
+        "timestamp": str(int(time.time() * 1000)),        
     }
     paramsStr = parse_param(paramsMap)
     return send_request(method, path, paramsStr, payload)
@@ -199,7 +213,7 @@ async def get_balance_perp_coinm():
     path = '/openApi/cswap/v1/user/balance'
     method = "GET"
     paramsMap = {        
-        "timestamp": str(int(time.time() * 1000))
+        "timestamp": str(int(time.time() * 1000)),        
     }
     paramsStr = parse_param(paramsMap)
     return send_request(method, path, paramsStr, payload)

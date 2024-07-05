@@ -2,11 +2,52 @@
 # Description: Routes for BingX exchange
 
 from fastapi import APIRouter, Depends, HTTPException, Request
-from app.bingx.api import get_k_line_data, get_balance_spot,get_balance_perp_coinm, get_balance_perp_usdtm, get_positions, get_income_acc, get_all_orders, get_full_all_orders
+from app.bingx.api import get_k_line_data,get_ticker, get_balance_spot,get_balance_perp_coinm, get_balance_perp_usdtm, get_positions, get_income_acc, get_all_orders, get_full_all_orders
 from loguru import logger
 from app.utils.ip_check import is_ip_allowed
 
 router = APIRouter()
+
+@router.get('/get-ticker')
+async def get_ticker_endpoint(request: Request, symbol: str):
+    """           
+    Get information about a specific trading symbol.
+
+    Returns:
+    - code: Status code of the response (0 indicates success).
+    - msg: Message associated with the response (usually empty if successful).
+    - data: Contains the following fields:
+        - symbol: The trading pair (e.g., BTC-USDT).
+        - priceChange: The price change.
+        - priceChangePercent: The percentage price change.
+        - lastPrice: The last price.
+        - lastQty: The last quantity.
+        - highPrice: The highest price.
+        - lowPrice: The lowest price.
+        - volume: The trading volume.
+        - quoteVolume: The quote volume.
+        - openPrice: The opening price.
+        - openTime: The opening time (timestamp).
+        - closeTime: The closing time (timestamp).
+        - askPrice: The ask price.
+        - askQty: The ask quantity.
+        - bidPrice: The bid price.
+        - bidQty: The bid quantity.
+    """    
+    
+    client_ip = request.client.host
+    
+    logger.info(f"Getting data for {symbol} from {client_ip}")
+
+    # Verificar si la IP está permitida
+    await is_ip_allowed(client_ip)
+    
+    try:
+        result = await get_ticker(symbol)
+        return result
+    except Exception as e:
+        logger.error(f"Error fetching ticker information: {str(e)}")
+        raise HTTPException(status_code=400, detail=str(e))
 
 @router.get('/get-k-line-data')
 async def get_k_line_data_endpoint(request: Request, symbol: str, interval: str, limit: str, start_date: str, end_date: str):
