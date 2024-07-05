@@ -1,4 +1,3 @@
-# Path: app/strateger/models.py
 from sqlalchemy import Column, Integer, String, Boolean, Float, Text
 from app.siteground.base import BaseEstrategias
 
@@ -12,9 +11,9 @@ class Strategy(BaseEstrategias):
     secretKey = Column(String(255), nullable=True)
     ticker = Column(String(10), nullable=True)
     resultadoAcc = Column(String(100), nullable=True)
-    description = Column(String(500), nullable=True)  # Cambiado a Text
-    onStartDate = Column(String(50), nullable=True)  # Nuevo campo
-    offEndDate = Column(String(50), nullable=True)  # Nuevo campo
+    description = Column(String(500), nullable=True)
+    onStartDate = Column(String(50), nullable=True)
+    offEndDate = Column(String(50), nullable=True)
     longEntryOrder = Column(String(100), nullable=True)
     longCloseOrder = Column(String(100), nullable=True)
     longEntryIndicator = Column(String(100), nullable=True)

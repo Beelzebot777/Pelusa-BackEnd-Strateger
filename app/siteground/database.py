@@ -6,7 +6,7 @@ from sqlalchemy.orm import sessionmaker
 from app.config import settings
 from app.siteground.base import BaseAlarmas, BaseEstrategias
 from app.alarms.models import Alarm
-from app.strateger.models import Strategy
+from app.strateger.models import Strategy  # Asegúrate de que este import funcione correctamente
 
 import asyncio
 

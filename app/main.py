@@ -10,7 +10,7 @@ from app.server.middlewares import AllowedIPsMiddleware, InvalidRequestLoggingMi
 from fastapi.middleware.cors import CORSMiddleware
 from app.alarms.routes import router as alarms_router
 from app.bingx.routes import router as bingx_router
-from app.strateger.routes import router as strateger_router
+from app.strateger.strateger import router as strateger_router
 from app.server.routes import router as server_router
 
 #------------------------------------------------------- LOGGING -------------------------------------------------------

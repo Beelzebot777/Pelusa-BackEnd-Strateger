@@ -1,12 +1,9 @@
-# Path: app/strateger/schemas.py
-# Description: Pydantic schemas for orders
-
 from pydantic import BaseModel
 from typing import Optional
 
 class StrategyBase(BaseModel):
     name: str
-    isOn:  Optional[bool] = None
+    isOn: Optional[bool] = None
     apiKey: Optional[str] = None
     secretKey: Optional[str] = None
     ticker: Optional[str] = None
@@ -47,7 +44,7 @@ class StrategyInDBBase(StrategyBase):
     id: int
 
     class Config:
-        orm_mode = True
+        from_attributes = True  # Asegúrate de usar 'from_attributes' en lugar de 'orm_mode'
 
 class Strategy(StrategyInDBBase):
     pass

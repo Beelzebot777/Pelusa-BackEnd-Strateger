@@ -1,9 +1,7 @@
-# Path: app/strateger/crud.py
-
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
-from app.strateger.models import Strategy
-from app.strateger.schemas import StrategyCreate, StrategyUpdate
+from app.strateger.models.strategies import Strategy
+from app.strateger.schemas.strategies import StrategyCreate, StrategyUpdate
 
 # Funciones CRUD para Strategy
 async def create_strategy(db: AsyncSession, strategy: StrategyCreate):

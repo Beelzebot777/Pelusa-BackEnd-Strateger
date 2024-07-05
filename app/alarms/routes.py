@@ -10,7 +10,7 @@ from app.alarms.utils import convierte_temporalidad                         #Uti
 
 from loguru import logger                                                   #Logging
 from typing import List                                                     #Tipado         
-from app.strateger.orders import crear_operacion                            #Operaciones                        
+from app.strateger.utils.orders import crear_operacion                      #Operaciones                        
 
 router = APIRouter()
 
