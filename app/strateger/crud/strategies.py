@@ -1,3 +1,5 @@
+#Path: app/strateger/crud/strategies.py
+
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
 from app.strateger.models.strategies import Strategy

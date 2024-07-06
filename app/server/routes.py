@@ -1,3 +1,5 @@
+#Path: app/server/__init__.py
+
 from fastapi import APIRouter, Request, Depends
 from fastapi.responses import JSONResponse
 from sqlalchemy.ext.asyncio import AsyncSession

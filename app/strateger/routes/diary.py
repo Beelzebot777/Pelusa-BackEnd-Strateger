@@ -1,3 +1,5 @@
+#Path: app/strateger/routes/diary.py
+
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
 from app.siteground.database import get_db_estrategias

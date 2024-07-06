@@ -1,3 +1,5 @@
+#Path: app/strateger/schemas/strategies.py
+
 from pydantic import BaseModel
 from typing import Optional
 

@@ -1,4 +1,4 @@
-#Path: app/strateger/orders.py
+#Path: app/strateger/utils/orders.py
 
 from app.bingx.api import make_order, close_all_positions
 from loguru import logger

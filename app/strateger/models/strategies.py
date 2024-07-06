@@ -1,3 +1,5 @@
+#Path: app/strateger/models/strategies.py
+
 from sqlalchemy import Column, Integer, String, Boolean, Float, Text
 from app.siteground.base import BaseEstrategias
 
