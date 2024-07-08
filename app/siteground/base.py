@@ -8,3 +8,6 @@ BaseAlarmas = declarative_base()
 
 # Base for strategies database
 BaseEstrategias = declarative_base()
+
+#Base for diary database
+BaseDiary = declarative_base()

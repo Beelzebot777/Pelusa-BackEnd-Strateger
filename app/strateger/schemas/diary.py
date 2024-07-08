@@ -1,14 +1,13 @@
-#Path: app/strateger/schemas/diary.py
-
+# Path: app/strateger/schemas/diary.py
 from pydantic import BaseModel
-from typing import Optional
+from typing import List, Optional
+from datetime import datetime
 
 class DiaryEntryBase(BaseModel):
-    entry_id: int
-    strategy_id: int
-    ticker: str
-    note: str
-    timestamp: str
+    date: datetime
+    text: str
+    photos: Optional[List[str]] = []
+    references: Optional[List[str]] = []
 
 class DiaryEntryCreate(DiaryEntryBase):
     pass
@@ -16,14 +15,8 @@ class DiaryEntryCreate(DiaryEntryBase):
 class DiaryEntryUpdate(DiaryEntryBase):
     pass
 
-class DiaryEntryInDBBase(DiaryEntryBase):
-    id: int
+class DiaryEntry(DiaryEntryBase):
+    id: str
 
     class Config:
         from_attributes = True
-
-class DiaryEntry(DiaryEntryInDBBase):
-    pass
-
-class DiaryEntryInDB(DiaryEntryInDBBase):
-    pass

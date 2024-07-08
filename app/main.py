@@ -21,11 +21,12 @@ logger.add("logs/file_{time:YYYY-MM-DD}.log", rotation="00:00")
 #------------------------------------------------------- ASYNC CONTEXT MANAGER -----------------------------------------
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    from app.siteground.database import init_db_alarmas, init_db_estrategias
+    from app.siteground.database import init_db_alarmas, init_db_estrategias, init_db_diary
     try:
         logger.info("Initializing databases...")
         await init_db_alarmas()
-        await init_db_estrategias()        
+        await init_db_estrategias()       
+        await init_db_diary() 
         logger.info("Databases: OK")
 
         # Iniciar la tarea en segundo plano
