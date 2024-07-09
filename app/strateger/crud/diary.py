@@ -25,7 +25,7 @@ async def crud_create_diary_entry(db: AsyncSession, entry: DiaryEntryCreate):
     await db.refresh(db_entry)
     return db_entry
 
-async def update_diary_entry(db: AsyncSession, entry_id: str, entry: DiaryEntryUpdate):
+async def crud_update_diary_entry(db: AsyncSession, entry_id: str, entry: DiaryEntryUpdate):
     db_entry = await get_diary_entry(db, entry_id)
     if db_entry is None:
         return None
@@ -35,7 +35,7 @@ async def update_diary_entry(db: AsyncSession, entry_id: str, entry: DiaryEntryU
     await db.refresh(db_entry)
     return db_entry
 
-async def delete_diary_entry(db: AsyncSession, entry_id: str):
+async def crud_delete_diary_entry(db: AsyncSession, entry_id: str):
     db_entry = await get_diary_entry(db, entry_id)
     if db_entry:
         await db.delete(db_entry)
