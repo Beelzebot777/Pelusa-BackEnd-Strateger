@@ -1,37 +1,18 @@
 # Path: app/siteground/database.py
-# Description: Database functions for siteground
 
 from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession
 from sqlalchemy.orm import sessionmaker
 from app.config import settings
 from app.siteground.base import BaseAlarmas, BaseEstrategias, BaseDiary
 
-import asyncio
-
 # Configuración de las bases de datos
-engine_alarmas = create_async_engine(
-    settings.DATABASE_URL_DESARROLLO_ALARMAS,
-    pool_recycle=3600,
-    pool_pre_ping=True
-)
-
+engine_alarmas = create_async_engine(settings.DATABASE_URL_DESARROLLO_ALARMAS, pool_recycle=3600,pool_pre_ping=True)
 SessionLocalAlarmas = sessionmaker(autocommit=False, autoflush=False, bind=engine_alarmas, class_=AsyncSession)
 
-engine_estrategias = create_async_engine(
-    settings.DATABASE_URL_DESARROLLO_ESTRATEGIAS,
-    pool_recycle=3600,
-    pool_pre_ping=True
-)
-
+engine_estrategias = create_async_engine(settings.DATABASE_URL_DESARROLLO_ESTRATEGIAS,pool_recycle=3600,pool_pre_ping=True)
 SessionLocalEstrategias = sessionmaker(autocommit=False, autoflush=False, bind=engine_estrategias, class_=AsyncSession)
 
-
-engine_diary = create_async_engine(
-    settings.DATABASE_URL_DESARROLLO_DIARY,
-    pool_recycle=3600,
-    pool_pre_ping=True
-)
-
+engine_diary = create_async_engine(settings.DATABASE_URL_DESARROLLO_DIARY,pool_recycle=3600,pool_pre_ping=True)
 SessionLocalDiary = sessionmaker(autocommit=False, autoflush=False, bind=engine_diary, class_=AsyncSession)
 
 async def get_db_alarmas():
