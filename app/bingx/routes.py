@@ -5,7 +5,7 @@ from fastapi import APIRouter, Depends, HTTPException, Request
 from app.bingx.api import (
     get_ticker, get_k_line_data, get_balance_spot,
     get_balance_perp_coinm, get_balance_perp_usdtm,
-    get_positions, get_income_acc, get_all_orders, get_full_all_orders
+    get_positions_usdtm, get_income_acc, get_all_orders, get_full_all_orders
 )
 from loguru import logger
 from app.utils.ip_check import is_ip_allowed
@@ -190,7 +190,7 @@ async def get_positions_endpoint(request: Request):
     await is_ip_allowed(client_ip)
     
     try:
-        result = await get_positions()        
+        result = await get_positions_usdtm()        
         return result
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
