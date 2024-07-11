@@ -14,6 +14,8 @@ class Settings:
     SECRETKEY = os.getenv("SECRETKEY")
     ALLOWED_IPS = os.getenv("ALLOWED_IPS", "").split(",")
     BLOCKED_IPS = os.getenv("BLOCKED_IPS", "").split(",")
+    UPLOAD_DIRECTORY = "./app/strateger/uploads/diary"
+
 
 settings = Settings()
 
