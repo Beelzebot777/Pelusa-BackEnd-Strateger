@@ -1,8 +1,9 @@
-#Path: app/main.py
+# Path: app/main.py
 
 from datetime import datetime
 from fastapi import FastAPI, Depends, HTTPException, Request
 from fastapi.responses import JSONResponse
+from fastapi.staticfiles import StaticFiles  # Importar StaticFiles
 import asyncio
 from loguru import logger
 from contextlib import asynccontextmanager
@@ -14,6 +15,7 @@ from app.alarms.routes import router as alarms_router
 from app.bingx.routes import router as bingx_router
 from app.strateger.strateger import router as strateger_router
 from app.server.routes import router as server_router
+from app.config import settings  # Asegúrate de importar settings o ajustar el path según tu configuración
 
 #------------------------------------------------------- LOGGING -------------------------------------------------------
 logger.add("logs/file_{time:YYYY-MM-DD}.log", rotation="00:00")
@@ -46,6 +48,9 @@ async def lifespan(app: FastAPI):
 
 #------------------------------------------------------- FASTAPI -------------------------------------------------------
 app = FastAPI(lifespan=lifespan)
+
+# Montar el directorio estático
+app.mount("/static", StaticFiles(directory=settings.UPLOAD_DIRECTORY), name="static")
 
 #------------------------------------------------------- MIDDLEWARE ----------------------------------------------------
 
