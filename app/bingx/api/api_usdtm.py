@@ -52,17 +52,6 @@ async def get_balance_perp_usdtm():
     paramsStr = parse_param(paramsMap)
     return send_request(method, path, paramsStr, payload)
 
-async def get_positions():
-    payload = {}
-    path = '/openApi/swap/v2/user/positions'
-    method = "GET"
-    paramsMap = {
-        "recvWindow": "0",
-        "timestamp": str(int(time.time() * 1000))
-    }
-    paramsStr = parse_param(paramsMap)
-    return send_request(method, path, paramsStr, payload)
-
 async def get_income_acc():
     payload = {}
     path = '/openApi/swap/v2/user/income'
@@ -99,6 +88,47 @@ async def get_full_all_orders(limit: int, offset: int):
     paramsMap = {
         "limit": str(limit),
         "timestamp": timestamp
+    }
+    paramsStr = parse_param(paramsMap)
+    return send_request(method, path, paramsStr, payload)
+
+
+#! CURRENTLY NOT IMPLEMENTED AND ROUTED
+async def get_positions_usdtm():
+    """
+    Fetches the user's positions for USDT-M perpetual futures.
+
+    Request Parameters:
+    - symbol (string, optional): Trading pair symbol with a hyphen, e.g., BTC-USDT.
+    - timestamp (int64, required): Request timestamp in milliseconds.
+    - recvWindow (int64, optional): Request valid time window value in milliseconds.
+
+    Response:
+    - symbol (string): Trading pair, e.g., BTC-USDT.
+    - positionId (string): Position ID.
+    - positionSide (string): Position direction, can be LONG or SHORT.
+    - isolated (bool): Indicates if it is isolated margin mode. True: isolated margin mode, False: cross margin.
+    - positionAmt (string): Position amount.
+    - availableAmt (string): Available amount.
+    - unrealizedProfit (string): Unrealized profit and loss.
+    - realisedProfit (string): Realized profit and loss.
+    - initialMargin (string): Initial margin.
+    - margin (string): Margin.
+    - avgPrice (string): Average opening price.
+    - liquidationPrice (float64): Liquidation price.
+    - leverage (int): Leverage.
+    - positionValue (string): Position value.
+    - markPrice (string): Mark price.
+    - riskRate (string): Risk rate. When the risk rate reaches 100%, it will force liquidation or position reduction.
+    - maxMarginReduction (string): Maximum margin reduction.
+    - pnlRatio (string): Unrealized P&L ratio.
+    - updateTime (int64): Position update time in milliseconds.
+    """
+    payload = {}
+    path = '/openApi/swap/v2/user/positions'
+    method = "GET"
+    paramsMap = {
+        "timestamp": str(int(time.time() * 1000))
     }
     paramsStr = parse_param(paramsMap)
     return send_request(method, path, paramsStr, payload)
