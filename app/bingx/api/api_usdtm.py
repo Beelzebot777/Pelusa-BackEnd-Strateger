@@ -92,8 +92,6 @@ async def get_full_all_orders(limit: int, offset: int):
     paramsStr = parse_param(paramsMap)
     return send_request(method, path, paramsStr, payload)
 
-
-#! CURRENTLY NOT IMPLEMENTED AND ROUTED
 async def get_positions_usdtm():
     """
     Fetches the user's positions for USDT-M perpetual futures.

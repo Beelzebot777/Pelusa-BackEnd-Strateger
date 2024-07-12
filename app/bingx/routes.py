@@ -3,9 +3,9 @@
 
 from fastapi import APIRouter, Depends, HTTPException, Request
 
-from app.bingx.api.api_coinm import get_balance_perp_coinm
+from app.bingx.api.api_coinm import get_balance_perp_coinm, get_positions_perp_coinm
 from app.bingx.api.api_main import get_ticker
-from app.bingx.api.api_spot import get_balance_spot
+from app.bingx.api.api_spot import get_balance_spot, get_spot_deposit_records
 from app.bingx.api.api_usdtm import get_k_line_data, get_balance_perp_usdtm, get_income_acc, get_all_orders, get_full_all_orders, get_positions_usdtm
 
 from loguru import logger
@@ -167,34 +167,7 @@ async def get_balance_endpoint(request: Request):
         return result
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
-    
-@router.get('/get-positions')
-async def get_positions_endpoint(request: Request):
-    """
-    Get user's positions information
 
-    Args:
-        request (Request): The incoming request object.
-
-    Returns:
-        The position information.
-        
-
-    Raises:
-        HTTPException: If an error occurs while fetching the position information.
-    """
-    client_ip = request.client.host
-    
-    logger.info(f"Fetching positions from {client_ip}")
-
-    # Verificar si la IP está permitida
-    await is_ip_allowed(client_ip)
-    
-    try:
-        result = await get_positions_usdtm()        
-        return result
-    except Exception as e:
-        raise HTTPException(status_code=400, detail=str(e))
     
 @router.get('/get-income-acc')
 async def get_income_acc_endpoint(request: Request):
@@ -280,6 +253,138 @@ async def get_full_all_orders_endpoint(request: Request, limit: int = 500, offse
     try:
         result = await get_full_all_orders(limit, offset)     
         logger.debug(f"result: {result}")  
+        return result
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=str(e))
+    
+    
+@router.get('/get-positions-coinm')
+async def get_positions_endpoint(request: Request):
+    """
+    Get user's coin-m account positions information
+
+    Args:
+    - request (Request): The incoming request object.
+    
+    Return:
+    - code (int32): Status code.
+    - msg (string): Description information.
+    - timestamp (int64): Response generation time point in milliseconds.
+    - data (List[Data]): List of positions.
+
+    Data Fields:
+    - symbol (string): Trading pair.
+    - positionId (string): Position number.
+    - positionSide (string): Holding direction, bi-directional position can only be LONG or SHORT.
+    - isolated (bool): Indicates if it is per position mode. True: per position mode, False: full position.
+    - positionAmt (string): Holding quantity.
+    - availableAmt (string): Quantity that can be closed.
+    - unrealizedProfit (string): Unrealized profit.
+    - initialMargin (string): Initial margin.
+    - liquidationPrice (float64): Force liquidation price.
+    - avgPrice (string): Opening average price.
+    - leverage (int32): Leverage.
+    - markPrice (string): Mark price.
+    - riskRate (string): Risk rate.
+    - maxMarginReduction (string): Maximum reduction of margin.
+    - updateTime (int64): Position update time in milliseconds.            
+
+    Raises:
+        HTTPException: If an error occurs while fetching the position information.
+    """
+    client_ip = request.client.host
+    
+    logger.info(f"Fetching positions from {client_ip}")
+
+    # Verificar si la IP está permitida
+    await is_ip_allowed(client_ip)
+    
+    try:
+        result = await get_positions_perp_coinm()        
+        return result
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=str(e))
+
+@router.get('/get-positions-usdtm')
+async def get_positions_endpoint(request: Request):
+    """
+    Fetches the user's positions for USDT-M perpetual futures.    
+
+    Args:
+        request (Request): The incoming request object.
+
+    Returns:
+    - symbol (string): Trading pair, e.g., BTC-USDT.
+    - positionId (string): Position ID.
+    - positionSide (string): Position direction, can be LONG or SHORT.
+    - isolated (bool): Indicates if it is isolated margin mode. True: isolated margin mode, False: cross margin.
+    - positionAmt (string): Position amount.
+    - availableAmt (string): Available amount.
+    - unrealizedProfit (string): Unrealized profit and loss.
+    - realisedProfit (string): Realized profit and loss.
+    - initialMargin (string): Initial margin.
+    - margin (string): Margin.
+    - avgPrice (string): Average opening price.
+    - liquidationPrice (float64): Liquidation price.
+    - leverage (int): Leverage.
+    - positionValue (string): Position value.
+    - markPrice (string): Mark price.
+    - riskRate (string): Risk rate. When the risk rate reaches 100%, it will force liquidation or position reduction.
+    - maxMarginReduction (string): Maximum margin reduction.
+    - pnlRatio (string): Unrealized P&L ratio.
+    - updateTime (int64): Position update time in milliseconds.
+    
+    Raises:
+        HTTPException: If an error occurs while fetching the position information.
+    """
+    
+    client_ip = request.client.host
+    
+    logger.info(f"Fetching positions from {client_ip}")
+
+    # Verificar si la IP está permitida
+    await is_ip_allowed(client_ip)
+    
+    try:
+        result = await get_positions_usdtm()        
+        return result
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=str(e))
+    
+@router.get('/get-spot-deposit-records')
+async def get_positions_endpoint(request: Request):
+    """
+    Get user's positions information
+
+    Args:
+        request (Request): The incoming request object.
+
+     Returns:
+        amount: DECIMAL                 Monto de recarga.
+        coin: string                    Nombre de la moneda.
+        network: string                 Red de recarga.
+        status: int                     Estado (0-En progreso, 6-Cadena cargada, 1-Completado).
+        address: string                 Dirección de recarga.
+        addressTag: string              Observación.
+        txId: LONG                      ID de la transacción.
+        insertTime: LONG                Hora de la transacción.
+        transferType: LONG              Tipo de transacción (0 = Recarga).
+        unlockConfirm: LONG             Confirmaciones para desbloqueo.
+        confirmTimes: LONG              Confirmaciones de la red.
+        sourceAddress: string           Dirección de origen.            
+
+    Raises:
+        HTTPException: If an error occurs while fetching the position information.
+    """
+    client_ip = request.client.host
+    
+    logger.info(f"Fetching positions from {client_ip}")
+
+    # Verificar si la IP está permitida
+    await is_ip_allowed(client_ip)
+    
+    try:
+        result = await get_spot_deposit_records()
         return result
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
