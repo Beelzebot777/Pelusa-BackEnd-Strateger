@@ -2,11 +2,12 @@
 # Description: Routes for BingX exchange
 
 from fastapi import APIRouter, Depends, HTTPException, Request
-from app.bingx.api import (
-    get_ticker, get_k_line_data, get_balance_spot,
-    get_balance_perp_coinm, get_balance_perp_usdtm,
-    get_positions_usdtm, get_income_acc, get_all_orders, get_full_all_orders
-)
+
+from app.bingx.api.api_coinm import get_balance_perp_coinm
+from app.bingx.api.api_main import get_ticker
+from app.bingx.api.api_spot import get_balance_spot
+from app.bingx.api.api_usdtm import get_k_line_data, get_balance_perp_usdtm, get_income_acc, get_all_orders, get_full_all_orders, get_positions_usdtm
+
 from loguru import logger
 from app.utils.ip_check import is_ip_allowed
 

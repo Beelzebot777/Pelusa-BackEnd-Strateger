@@ -1,6 +1,6 @@
 #Path: app/strateger/utils/orders.py
 
-from app.bingx.api.api import make_order, close_all_positions
+from app.bingx.api.api_usdtm import make_order, close_all_positions
 from loguru import logger
 from sqlalchemy.ext.asyncio import AsyncSession
 from app.strateger.crud import get_strategy_by_name_and_ticker
