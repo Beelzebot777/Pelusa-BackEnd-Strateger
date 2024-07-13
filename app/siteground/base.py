@@ -1,5 +1,4 @@
 # Path: app/siteground/base.py
-# Description: Base class for SQLAlchemy models
 
 from sqlalchemy.ext.declarative import declarative_base
 
@@ -9,5 +8,8 @@ BaseAlarmas = declarative_base()
 # Base for strategies database
 BaseEstrategias = declarative_base()
 
-#Base for diary database
+# Base for diary database
 BaseDiary = declarative_base()
+
+# Base for positions database
+BasePositions = declarative_base()

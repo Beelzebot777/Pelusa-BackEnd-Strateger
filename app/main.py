@@ -3,11 +3,11 @@
 from datetime import datetime
 from fastapi import FastAPI, Depends, HTTPException, Request
 from fastapi.responses import JSONResponse
-from fastapi.staticfiles import StaticFiles  # Importar StaticFiles
+from fastapi.staticfiles import StaticFiles
 import asyncio
 from loguru import logger
 from contextlib import asynccontextmanager
-from app.siteground.database import close_db_connections
+from app.siteground.database import close_db_connections, init_db_alarmas, init_db_estrategias, init_db_diary, init_db_positions
 from app.utils.server_status import log_server_status
 from app.server.middlewares import AllowedIPsMiddleware, InvalidRequestLoggingMiddleware, LogResponseMiddleware
 from fastapi.middleware.cors import CORSMiddleware
@@ -15,7 +15,7 @@ from app.alarms.routes import router as alarms_router
 from app.bingx.routes import router as bingx_router
 from app.strateger.strateger import router as strateger_router
 from app.server.routes import router as server_router
-from app.config import settings  # Asegúrate de importar settings o ajustar el path según tu configuración
+from app.config import settings
 
 #------------------------------------------------------- LOGGING -------------------------------------------------------
 logger.add("logs/file_{time:YYYY-MM-DD}.log", rotation="00:00")
@@ -23,12 +23,12 @@ logger.add("logs/file_{time:YYYY-MM-DD}.log", rotation="00:00")
 #------------------------------------------------------- ASYNC CONTEXT MANAGER -----------------------------------------
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    from app.siteground.database import init_db_alarmas, init_db_estrategias, init_db_diary
     try:
         logger.info("Initializing databases...")
         await init_db_alarmas()
         await init_db_estrategias()       
         await init_db_diary() 
+        await init_db_positions()
         logger.info("Databases: OK")
 
         # Iniciar la tarea en segundo plano
@@ -40,7 +40,7 @@ async def lifespan(app: FastAPI):
         logger.error(f"Error during startup: {e}")
         raise
     finally:
-        logger.info("Shutting down...")    
+        logger.info("Shutting down...")
         try:
             await close_db_connections()  # Asegúrate de cerrar las conexiones aquí
         except Exception as e:
