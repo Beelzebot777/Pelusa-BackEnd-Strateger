@@ -1,25 +1,29 @@
 # Path: app/strateger/schemas/positions.py
 
 from pydantic import BaseModel
-from typing import List, Optional
+from typing import List
 
 class PositionBase(BaseModel):
-    symbol: str
     account_name: str
     account_type: str
+    symbol: str
     positionId: str
     positionSide: str
     isolated: bool
     positionAmt: str
     availableAmt: str
     unrealizedProfit: str
+    realisedProfit: str
     initialMargin: str
-    liquidationPrice: float
+    margin: str
     avgPrice: str
+    liquidationPrice: float
     leverage: int
+    positionValue: str
     markPrice: str
     riskRate: str
     maxMarginReduction: str
+    pnlRatio: str
     updateTime: int
 
 class PositionCreate(PositionBase):

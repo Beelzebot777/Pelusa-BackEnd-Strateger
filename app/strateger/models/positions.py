@@ -9,18 +9,22 @@ class Position(BasePositions):
     id = Column(Integer, primary_key=True, index=True)
     account_name = Column(String(50), nullable=False)  # Puede ser: Main, Subaccount, etc.
     account_type = Column(String(50), nullable=False)  # Del tipo: 'Perp USDT-M', 'Perp COIN-M', 'Spot'
-    symbol = Column(String(50), nullable=False)  # Añadido longitud
-    positionId = Column(String(50), nullable=False)  # Añadido longitud
-    positionSide = Column(String(50), nullable=False)  # Añadido longitud
+    symbol = Column(String(50), nullable=False)
+    positionId = Column(String(50), nullable=False)
+    positionSide = Column(String(50), nullable=False)
     isolated = Column(Boolean, nullable=False)
-    positionAmt = Column(String(50), nullable=False)  # Añadido longitud
-    availableAmt = Column(String(50), nullable=False)  # Añadido longitud
-    unrealizedProfit = Column(String(50), nullable=False)  # Añadido longitud
-    initialMargin = Column(String(50), nullable=False)  # Añadido longitud
+    positionAmt = Column(String(50), nullable=False)
+    availableAmt = Column(String(50), nullable=False)
+    unrealizedProfit = Column(String(50), nullable=False)
+    realisedProfit = Column(String(50), nullable=True)  # Campo adicional
+    initialMargin = Column(String(50), nullable=False)
+    margin = Column(String(50), nullable=True)  # Campo adicional
+    avgPrice = Column(String(50), nullable=False)
     liquidationPrice = Column(Float, nullable=False)
-    avgPrice = Column(String(50), nullable=False)  # Añadido longitud
     leverage = Column(Integer, nullable=False)
-    markPrice = Column(String(50), nullable=False)  # Añadido longitud
-    riskRate = Column(String(50), nullable=False)  # Añadido longitud
-    maxMarginReduction = Column(String(50), nullable=False)  # Añadido longitud
+    positionValue = Column(String(50), nullable=True)  # Campo adicional
+    markPrice = Column(String(50), nullable=False)
+    riskRate = Column(String(50), nullable=False)
+    maxMarginReduction = Column(String(50), nullable=False)
+    pnlRatio = Column(String(50), nullable=True)  # Campo adicional
     updateTime = Column(BigInteger, nullable=False)

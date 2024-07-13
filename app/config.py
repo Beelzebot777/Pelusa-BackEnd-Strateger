@@ -20,5 +20,4 @@ class Settings:
 
 settings = Settings()
 
-logger.debug(f"DATABASE_URL_DESARROLLO_POSITIONS: {settings.DATABASE_URL_DESARROLLO_POSITIONS}")
 
