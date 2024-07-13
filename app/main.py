@@ -16,6 +16,7 @@ from app.bingx.routes import router as bingx_router
 from app.strateger.strateger import router as strateger_router
 from app.server.routes import router as server_router
 from app.config import settings
+from app.strateger.utils.tasks import background_tasks
 
 #------------------------------------------------------- LOGGING -------------------------------------------------------
 logger.add("logs/file_{time:YYYY-MM-DD}.log", rotation="00:00")
@@ -34,6 +35,7 @@ async def lifespan(app: FastAPI):
         # Iniciar la tarea en segundo plano
         loop = asyncio.get_event_loop()
         loop.create_task(log_server_status())
+        loop.create_task(background_tasks())
 
         yield
     except Exception as e:
