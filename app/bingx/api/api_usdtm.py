@@ -17,7 +17,7 @@ async def make_order_usdtm(leverage, symbol, side, positionSide, order_type, qua
     paramsStr = parse_param(paramsMap)
     return send_request(method, path, paramsStr, payload)
 
-async def close_all_positions(symbol):
+async def close_all_positions_usdtm(symbol):
     payload = {}
     path = '/openApi/swap/v2/trade/closeAllPositions'
     method = "POST"
