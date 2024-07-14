@@ -36,7 +36,7 @@ class PositionInDB(PositionBase):
     id: int
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 class PositionResponse(BaseModel):
     code: int
@@ -45,4 +45,4 @@ class PositionResponse(BaseModel):
     data: List[PositionInDB]
 
     class Config:
-        orm_mode = True
+        from_attributes = True
