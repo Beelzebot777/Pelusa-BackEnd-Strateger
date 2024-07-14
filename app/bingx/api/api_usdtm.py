@@ -2,7 +2,7 @@
 import time
 from .api_utils import send_request, parse_param, date_to_milliseconds
 
-async def make_order(leverage, symbol, side, positionSide, order_type, quantity):
+async def make_order_usdtm(leverage, symbol, side, positionSide, order_type, quantity):
     payload = {}
     path = '/openApi/swap/v2/trade/order'
     method = "POST"

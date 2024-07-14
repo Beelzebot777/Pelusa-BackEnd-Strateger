@@ -1,6 +1,6 @@
 #Path: app/strateger/utils/orders.py
 
-from app.bingx.api.api_usdtm import make_order, close_all_positions
+from app.bingx.api.api_usdtm import make_order_usdtm, close_all_positions
 from loguru import logger
 from sqlalchemy.ext.asyncio import AsyncSession
 from app.strateger.crud import get_strategy_by_name_and_ticker
@@ -54,7 +54,7 @@ async def crear_operacion(variables: dict, db_alarmas: AsyncSession, db_estrateg
                 logger.info(f"Significa que se encontró primero una alarma de apertura de posición larga y luego una de cierre de posición larga.")
                 logger.info(f"Se procede a abrir una posición larga.")
 
-                result = await make_order(strategy.longLeverage, convert_ticker(ticker), "BUY", "LONG", "MARKET", strategy.longQuantity)
+                result = await make_order_usdtm(strategy.longLeverage, convert_ticker(ticker), "BUY", "LONG", "MARKET", strategy.longQuantity)
                 logger.debug(f"Resultado de abrir una posición larga: {result}")
 
             else:
@@ -76,7 +76,7 @@ async def crear_operacion(variables: dict, db_alarmas: AsyncSession, db_estrateg
             if int(ultima_alarm_indicator_open_short.id) > int(ultima_alarm_indicator_close_short.id):
                 logger.info(f"Significa que se encontró primero una alarma de apertura de posición corta y luego una de cierre de posición corta.")
                 logger.info(f"Se procede a abrir una posición corta.")
-                result = await make_order(strategy.shortLeverage, convert_ticker(ticker), "SELL", "SHORT", "MARKET", strategy.shortQuantity)
+                result = await make_order_usdtm(strategy.shortLeverage, convert_ticker(ticker), "SELL", "SHORT", "MARKET", strategy.shortQuantity)
                 logger.debug(f"Resultado de abrir una posición corta: {result}")
 
             else:
