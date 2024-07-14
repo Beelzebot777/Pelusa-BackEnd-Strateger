@@ -35,7 +35,7 @@ async def lifespan(app: FastAPI):
         # Iniciar la tarea en segundo plano
         loop = asyncio.get_event_loop()
         loop.create_task(log_server_status())
-        loop.create_task(background_tasks())
+        #loop.create_task(background_tasks())               #! ESTA TAREA DEBERIA DESCOMENTARSE EN PRODUCCION
 
         yield
     except Exception as e:
