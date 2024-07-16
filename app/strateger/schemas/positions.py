@@ -1,5 +1,3 @@
-# Path: app/strateger/schemas/positions.py
-
 from pydantic import BaseModel
 from typing import List
 
@@ -25,6 +23,7 @@ class PositionBase(BaseModel):
     maxMarginReduction: str
     pnlRatio: str
     updateTime: int
+    dateTime: str  # Nueva columna para fecha y hora
 
 class PositionCreate(PositionBase):
     pass

@@ -1,5 +1,3 @@
-# Path: app/strateger/models/positions.py
-
 from sqlalchemy import Column, String, Boolean, Integer, Float, BigInteger
 from app.siteground.base import BasePositions
 
@@ -28,3 +26,4 @@ class Position(BasePositions):
     maxMarginReduction = Column(String(50), nullable=True)
     pnlRatio = Column(String(50), nullable=True)  # Campo adicional
     updateTime = Column(BigInteger, nullable=True)
+    dateTime = Column(String(50), nullable=True)  # Nueva columna para fecha y hora

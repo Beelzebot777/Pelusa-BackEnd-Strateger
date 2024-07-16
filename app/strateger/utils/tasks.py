@@ -1,5 +1,3 @@
-# Path: app/strateger/utils/tasks.py
-
 import asyncio
 from app.bingx.api.api_usdtm import get_positions_usdtm
 from app.bingx.api.api_coinm import get_positions_perp_coinm
@@ -8,6 +6,13 @@ from app.strateger.models.positions import Position
 from sqlalchemy.ext.asyncio import AsyncSession
 from loguru import logger
 import json
+from datetime import datetime
+import os
+
+def get_fecha_hora_actual():
+    """Retorna la fecha y hora actual en formato MM:HH DD/MM/YYYY"""
+    ahora = datetime.now()
+    return ahora.strftime("%H:%M %d/%m/%Y")
 
 async def fetch_and_save_positions_usdtm(db: AsyncSession):
     try:
@@ -38,11 +43,15 @@ async def fetch_and_save_positions_usdtm(db: AsyncSession):
                 maxMarginReduction=position['maxMarginReduction'],
                 pnlRatio=position.get('pnlRatio', '0.0'),  # Valor por defecto
                 updateTime=position['updateTime'],
+                dateTime=get_fecha_hora_actual()  # Nueva columna con la fecha y hora actual
             )
             db.add(db_position)
         await db.commit()
+        logger.info("Successfully fetched and saved USDT-M positions.")
+    except json.JSONDecodeError as e:
+        logger.error(f"JSON decode error: {e}")
     except Exception as e:
-        logger.error(f"Error fetching or saving USDT-M positions: {e}")
+        logger.error(f"Unexpected error: {e}")
 
 async def fetch_and_save_positions_coinm(db: AsyncSession):
     try:
@@ -73,15 +82,26 @@ async def fetch_and_save_positions_coinm(db: AsyncSession):
                 maxMarginReduction=position['maxMarginReduction'],
                 pnlRatio=position.get('pnlRatio', '0.0'),  # Valor por defecto
                 updateTime=position['updateTime'],
+                dateTime=get_fecha_hora_actual()  # Nueva columna con la fecha y hora actual
             )
             db.add(db_position)
         await db.commit()
+        logger.info("Successfully fetched and saved COIN-M positions.")
+    except json.JSONDecodeError as e:
+        logger.error(f"JSON decode error: {e}")
     except Exception as e:
-        logger.error(f"Error fetching or saving COIN-M positions: {e}")
+        logger.error(f"Unexpected error: {e}")
 
 async def background_tasks():
+    interval = int(os.getenv('FETCH_INTERVAL', 3600))  # Fetch interval in seconds, default is 1 hour
     while True:
-        async for db in get_db_positions():
-            await fetch_and_save_positions_usdtm(db)
-            await fetch_and_save_positions_coinm(db)
-        await asyncio.sleep(3600)  # Esperar 1 hora
+        try:
+            async for db in get_db_positions():
+                await asyncio.gather(
+                    fetch_and_save_positions_usdtm(db),
+                    fetch_and_save_positions_coinm(db)
+                )
+            logger.info("Sleeping for {} seconds.".format(interval))
+            await asyncio.sleep(interval)
+        except Exception as e:
+            logger.error(f"Unexpected error in background_tasks: {e}")
