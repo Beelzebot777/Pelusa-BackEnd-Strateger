@@ -45,7 +45,8 @@ async def fetch_and_save_positions_usdtm(db: AsyncSession):
                 updateTime=position['updateTime'],
                 dateTime=get_fecha_hora_actual()  # Nueva columna con la fecha y hora actual
             )
-            db.add(db_position)
+            async with db.begin():
+                db.add(db_position)
         await db.commit()
         logger.info("Successfully fetched and saved USDT-M positions.")
     except json.JSONDecodeError as e:
@@ -84,7 +85,8 @@ async def fetch_and_save_positions_coinm(db: AsyncSession):
                 updateTime=position['updateTime'],
                 dateTime=get_fecha_hora_actual()  # Nueva columna con la fecha y hora actual
             )
-            db.add(db_position)
+            async with db.begin():
+                db.add(db_position)
         await db.commit()
         logger.info("Successfully fetched and saved COIN-M positions.")
     except json.JSONDecodeError as e:
@@ -97,10 +99,8 @@ async def background_tasks():
     while True:
         try:
             async for db in get_db_positions():
-                await asyncio.gather(
-                    fetch_and_save_positions_usdtm(db),
-                    fetch_and_save_positions_coinm(db)
-                )
+                await fetch_and_save_positions_usdtm(db)
+                await fetch_and_save_positions_coinm(db)
             logger.info("Sleeping for {} seconds.".format(interval))
             await asyncio.sleep(interval)
         except Exception as e:
