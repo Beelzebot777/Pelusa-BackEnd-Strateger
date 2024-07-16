@@ -1,12 +1,12 @@
-#Path: app/strateger/utils/orders.py
+# Path: app/strateger/utils/orders.py
 
 from app.bingx.api.api_usdtm import make_order_usdtm, close_all_positions_usdtm
 from app.bingx.api.api_coinm import make_order_coinm, close_all_positions_coinm
 from loguru import logger
 from sqlalchemy.ext.asyncio import AsyncSession
-from app.strateger.crud import get_strategy_by_name_and_ticker
+from app.strateger.crud.strategies import get_strategy_by_name_and_ticker
 from app.alarms.crud import get_latest_alarm_with_entry
-from app.strateger.models.strategies import Strategy  # Asegúrate de importar el modelo Strategy correctamente
+from app.strateger.models.strategies import Strategy
 
 async def crear_operacion(variables: dict, db_alarmas: AsyncSession, db_estrategias: AsyncSession):
     """
@@ -31,7 +31,9 @@ async def crear_operacion(variables: dict, db_alarmas: AsyncSession, db_estrateg
 
     # Obtener las estrategias de la base de datos de estrategias
     strategies = await get_strategy_by_name_and_ticker(db_estrategias, strategy_name, ticker)
-
+    
+    logger.debug(f"Variables: {variables}")    
+    
     if not strategies:
         logger.warning(f"Estrategias no encontradas para el nombre: {strategy_name} o el ticker: {ticker}")
         return
@@ -40,9 +42,6 @@ async def crear_operacion(variables: dict, db_alarmas: AsyncSession, db_estrateg
         if not strategy.isOn:
             logger.warning(f"La estrategia {strategy.name} está apagada.")
             continue
-
-        #! Checkear la apiKey y la secretKey, ambas deberían estar encriptadas en la base de datos.
-        #! Al parecer la tabla de estrategias debería tener una columna más llamada currentLongPyramiding y currentShortPyramiding.
 
         if type_operation in ['order open long']:
             if strategy.longEntryOrder == temporalidad:

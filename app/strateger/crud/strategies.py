@@ -40,4 +40,4 @@ async def get_strategy_by_name_and_ticker(db: AsyncSession, strategy_name: str, 
     result = await db.execute(
         select(Strategy).where(Strategy.name == strategy_name).where(Strategy.ticker == ticker)
     )
-    return result.scalars().first()
+    return result.scalars().all()
