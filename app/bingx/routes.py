@@ -6,12 +6,39 @@ from fastapi import APIRouter, Depends, HTTPException, Request
 from app.bingx.api.api_coinm import get_balance_perp_coinm, get_positions_perp_coinm
 from app.bingx.api.api_main import get_ticker
 from app.bingx.api.api_spot import get_balance_spot, get_spot_deposit_records
-from app.bingx.api.api_usdtm import get_k_line_data, get_balance_perp_usdtm, get_income_acc, get_all_orders, get_full_all_orders, get_positions_usdtm
+from app.bingx.api.api_usdtm import get_k_line_data, get_balance_perp_usdtm, get_income_acc, get_all_orders, get_full_all_orders, get_positions_usdtm, make_order_usdtm
 
 from loguru import logger
 from app.utils.ip_check import is_ip_allowed
 
 router = APIRouter()
+
+@router.post('/make-order-usdtm')
+async def make_order_usdtm_endpoint(request: Request, leverage: int, symbol: str, side: str, positionSide: str, order_type: str, quantity: float):
+    """
+    Endpoint para realizar una orden en USDT-M.
+
+    Parameters:
+    - leverage: Leverage para la orden.
+    - symbol: Símbolo de trading.
+    - side: Lado de la orden (BUY/SELL).
+    - positionSide: Lado de la posición (LONG/SHORT).
+    - order_type: Tipo de la orden (ej. MARKET).
+    - quantity: Cantidad de la orden.
+    """
+    client_ip = request.client.host
+    
+    logger.info(f"Make order request from {client_ip}")
+
+    # Verificar si la IP está permitida
+    await is_ip_allowed(client_ip)
+    
+    try:
+        result = await make_order_usdtm(leverage, symbol, side, positionSide, order_type, quantity)
+        return result
+    except Exception as e:
+        logger.error(f"Error making order: {str(e)}")
+        raise HTTPException(status_code=400, detail=str(e))
 
 @router.get('/get-ticker')
 async def get_ticker_endpoint(request: Request, symbol: str):

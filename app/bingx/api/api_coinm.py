@@ -1,8 +1,10 @@
 # Description: COIN-M Perp Futures functions for BingX exchange
 import time
 from .api_utils import send_request, parse_param
+from loguru import logger
 
 async def make_order_coinm(leverage, symbol, side, positionSide, order_type, quantity):
+
     payload = {}
     path = '/openApi/cswap/v1/trade/order'
     method = "POST"
@@ -12,7 +14,8 @@ async def make_order_coinm(leverage, symbol, side, positionSide, order_type, qua
         "side": side,
         "positionSide": positionSide,
         "type": order_type,
-        "quantity": quantity
+        "quantity": quantity,
+        "timestamp": str(int(time.time() * 1000))
     }
     paramsStr = parse_param(paramsMap)
     return send_request(method, path, paramsStr, payload)

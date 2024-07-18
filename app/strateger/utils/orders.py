@@ -56,11 +56,10 @@ async def crear_operacion(variables: dict, db_alarmas: AsyncSession, db_estrateg
                     logger.info(f"Se procede a abrir una posición larga.")
 
                     if strategy.account_type == 'coinm':
-                        result = await make_order_coinm(strategy.longLeverage, convert_ticker(ticker), "BUY", "LONG", "MARKET", strategy.longQuantity)
+                        result = await make_order_coinm(strategy.longLeverage, convert_ticker(ticker, strategy.account_type), "BUY", "LONG", "MARKET", int(strategy.longQuantity))
                     elif strategy.account_type == 'usdtm':
-                        result = await make_order_usdtm(strategy.longLeverage, convert_ticker(ticker), "BUY", "LONG", "MARKET", strategy.longQuantity)
-
-                    logger.debug(f"Resultado de abrir una posición larga: {result}")
+                        result = await make_order_usdtm(strategy.longLeverage, convert_ticker(ticker, strategy.account_type), "BUY", "LONG", "MARKET", strategy.longQuantity)                        
+                    logger.debug(f"Resultado de abrir una posición larga: {result}, en {strategy.account_type}")
 
                 else:
                     logger.warning(f"La última alarma de apertura de posición larga es mayor que la última alarma de cierre de posición larga.")
@@ -83,9 +82,9 @@ async def crear_operacion(variables: dict, db_alarmas: AsyncSession, db_estrateg
                     logger.info(f"Se procede a abrir una posición corta.")
 
                     if strategy.account_type == 'coinm':
-                        result = await make_order_coinm(strategy.shortLeverage, convert_ticker(ticker), "SELL", "SHORT", "MARKET", strategy.shortQuantity)
+                        result = await make_order_coinm(strategy.shortLeverage, convert_ticker(ticker, strategy.account_type), "SELL", "SHORT", "MARKET", int(strategy.shortQuantity))
                     elif strategy.account_type == 'usdtm':                
-                        result = await make_order_usdtm(strategy.shortLeverage, convert_ticker(ticker), "SELL", "SHORT", "MARKET", strategy.shortQuantity)
+                        result = await make_order_usdtm(strategy.shortLeverage, convert_ticker(ticker, strategy.account_type), "SELL", "SHORT", "MARKET", strategy.shortQuantity)
 
                     logger.debug(f"Resultado de abrir una posición corta: {result}")
 
@@ -102,9 +101,9 @@ async def crear_operacion(variables: dict, db_alarmas: AsyncSession, db_estrateg
                 logger.info(f"Se procede a cerrar todas las posiciones largas.")
 
                 if strategy.account_type == 'coinm':
-                    result = await close_all_positions_coinm(convert_ticker(ticker))
+                    result = await close_all_positions_coinm(convert_ticker(ticker, strategy.account_type))
                 elif strategy.account_type == 'usdtm':
-                    result = await close_all_positions_usdtm(convert_ticker(ticker))  # ! ESTO SOLO DEBERÍA CERRAR LAS POSICIONES LARGAS NO TODAS LAS POSICIONES
+                    result = await close_all_positions_usdtm(convert_ticker(ticker, strategy.account_type))  # ! ESTO SOLO DEBERÍA CERRAR LAS POSICIONES LARGAS NO TODAS LAS POSICIONES
 
                 logger.info(f"Cerrando todas las operaciones para {ticker}")
                 logger.debug(f"Resultado de cerrar todas las posiciones: {result}")
@@ -114,9 +113,9 @@ async def crear_operacion(variables: dict, db_alarmas: AsyncSession, db_estrateg
                 logger.info(f"Se procede a cerrar todas las posiciones cortas.")
 
                 if strategy.account_type == 'coinm':
-                    result = await close_all_positions_coinm(convert_ticker(ticker))
+                    result = await close_all_positions_coinm(convert_ticker(ticker, strategy.account_type))
                 elif strategy.account_type == 'usdtm':
-                    result = await close_all_positions_usdtm(convert_ticker(ticker))  # ! ESTO SOLO DEBERÍA CERRAR LAS POSICIONES LARGAS NO TODAS LAS POSICIONES
+                    result = await close_all_positions_usdtm(convert_ticker(ticker, strategy.account_type))  # ! ESTO SOLO DEBERÍA CERRAR LAS POSICIONES LARGAS NO TODAS LAS POSICIONES
 
                 logger.info(f"Cerrando todas las operaciones para {ticker}")            
                 logger.debug(f"Resultado de cerrar todas las posiciones: {result}")
@@ -124,7 +123,12 @@ async def crear_operacion(variables: dict, db_alarmas: AsyncSession, db_estrateg
             logger.error(f"La orden no es válida para la estrategia")
             continue
 
-def convert_ticker(ticker):
-    if ticker == 'BTCUSDT.PS':
-        return 'BTC-USDT'
+def convert_ticker(ticker, account_type):
+    
+    if account_type == 'usdtm':
+        if ticker == 'BTCUSDT.PS':
+            return 'BTC-USDT'
+    if account_type == 'coinm':
+        if ticker == 'BTCUSDT.PS':
+            return 'BTC-USD'
     return ticker
