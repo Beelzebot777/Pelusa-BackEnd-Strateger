@@ -7,7 +7,7 @@ from fastapi.staticfiles import StaticFiles
 import asyncio
 from loguru import logger
 from contextlib import asynccontextmanager
-from app.siteground.database import close_db_connections, init_db_alarmas, init_db_estrategias, init_db_diary, init_db_positions
+from app.siteground.database import close_db_connections, init_db_alarmas, init_db_estrategias, init_db_diary, init_db_positions, init_db_accounts
 from app.utils.server_status import log_server_status
 from app.server.middlewares import AllowedIPsMiddleware, InvalidRequestLoggingMiddleware, LogResponseMiddleware
 from fastapi.middleware.cors import CORSMiddleware
@@ -30,12 +30,13 @@ async def lifespan(app: FastAPI):
         await init_db_estrategias()       
         await init_db_diary() 
         await init_db_positions()
+        await init_db_accounts()                        
         logger.info("Databases: OK")
 
         # Iniciar la tarea en segundo plano
         loop = asyncio.get_event_loop()
         loop.create_task(log_server_status())
-        #loop.create_task(background_tasks())               #! ESTA TAREA DEBERIA DESCOMENTARSE EN PRODUCCION
+        loop.create_task(background_tasks())               #! ESTA TAREA DEBERIA DESCOMENTARSE EN PRODUCCION
 
         yield
     except Exception as e:

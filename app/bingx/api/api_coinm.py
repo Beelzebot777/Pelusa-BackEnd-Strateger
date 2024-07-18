@@ -29,6 +29,75 @@ async def close_all_positions_coinm(symbol):
     return send_request(method, path, paramsStr, payload)
 
 async def get_balance_perp_coinm():
+    """
+    Envia una solicitud asíncrona para obtener el balance de cuenta en el mercado perpetuo de contratos coin-margined (COIN-M).
+
+    Parámetros de la Solicitud:
+    --------------------------
+    La solicitud utiliza el método GET y envía los siguientes parámetros de consulta:
+
+    - symbol (string, opcional): Par de trading, por ejemplo, BTC-USD, usar letras mayúsculas.
+    - timestamp (int64, requerido): Marca de tiempo de la solicitud, Unidad: milisegundos.
+    - recvWindow (int64, opcional): Valor de ventana de tiempo válido de la solicitud, Unidad: milisegundos.
+
+    Cuerpo de la Solicitud:
+    -----------------------
+    El cuerpo de la solicitud está vacío ({}).
+
+    Endpoint:
+    ---------
+    /openApi/cswap/v1/user/balance
+
+    Respuesta:
+    ----------
+    La respuesta contiene los siguientes campos:
+
+    - code (int32): Código de estado.
+    - msg (string): Mensaje de descripción.
+    - timestamp (int64): Marca de tiempo de generación de la respuesta, Unidad: milisegundos.
+    - data (List[Data]): Lista de activos con los siguientes campos:
+
+        - asset (string): Activo del usuario.
+        - balance (string): Balance del activo.
+        - equity (string): Valor neto del activo.
+        - unrealizedProfit (string): Ganancia no realizada.
+        - availableMargin (string): Margen disponible.
+        - usedMargin (string): Margen usado.
+        - freezedMargin (string): Margen congelado.
+        - shortUid (string): UID del usuario.
+
+    Ejemplo de Respuesta:
+    ---------------------
+    {
+        "code": 200,
+        "msg": "Success",
+        "timestamp": 1627891234567,
+        "data": [
+            {
+                "asset": "BTC",
+                "balance": "0.500",
+                "equity": "0.505",
+                "unrealizedProfit": "0.005",
+                "availableMargin": "0.400",
+                "usedMargin": "0.100",
+                "freezedMargin": "0.000",
+                "shortUid": "123456789"
+            }
+        ]
+    }
+
+    Códigos de Estado de Respuesta:
+    -------------------------------
+    - 200 OK: La solicitud se ha procesado correctamente.
+    - 400 Bad Request: La solicitud contiene un error (por ejemplo, timestamp no válido).
+    - 401 Unauthorized: La solicitud no está autorizada.
+    - 500 Internal Server Error: Error del servidor.
+
+    Notas Adicionales:
+    ------------------
+    - Asegúrate de que la marca de tiempo (timestamp) sea válida y esté en el rango permitido.
+    - La función send_request debe manejar la firma y el envío de la solicitud al servidor.
+    """
     payload = {}
     path = '/openApi/cswap/v1/user/balance'
     method = "GET"
@@ -38,7 +107,6 @@ async def get_balance_perp_coinm():
     paramsStr = parse_param(paramsMap)
     return send_request(method, path, paramsStr, payload)
 
-#! CURRENTLY NOT IMPLEMENTED AND ROUTED
 async def get_positions_perp_coinm():
     """
     Fetches the user's positions for COIN-M perpetual futures.

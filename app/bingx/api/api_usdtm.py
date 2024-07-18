@@ -43,6 +43,25 @@ async def get_k_line_data(symbol, interval, limit, start_time, end_time):
     return send_request(method, path, paramsStr, payload)
 
 async def get_balance_perp_usdtm():
+    """
+    Retrieves the balance for the USDTM perpetual contract.
+
+    Returns:
+        The balance for the USDTM perpetual contract.
+    
+    Example Return:
+        - Balance Information:
+        - User ID: 875046285523701766
+        - Asset: USDT
+        - Balance: 252.9224 USDT
+        - Equity: 233.5737 USDT
+        - Unrealized Profit: -19.3487 USDT
+        - Realized Profit: -0.5324 USDT
+        - Available Margin: 127.3871 USDT
+        - Used Margin: 125.5353 USDT
+        - Freezed Margin: 0.0000 USDT
+        - Short UID: 5816495        
+    """
     payload = {}
     path = '/openApi/swap/v2/user/balance'
     method = "GET"

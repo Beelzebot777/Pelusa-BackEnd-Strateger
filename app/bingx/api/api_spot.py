@@ -3,6 +3,57 @@ import time
 from .api_utils import send_request, parse_param
 
 async def get_balance_spot():
+    """
+    Envia una solicitud asíncrona para obtener el balance de cuenta en el mercado spot.
+
+    Parámetros de la Solicitud:
+    --------------------------
+    La solicitud utiliza el método GET y envía los siguientes parámetros de consulta:
+
+    - recvWindow (int64, opcional): Timestamp de inicio de la solicitud, Unidad: milisegundos.
+    - timestamp (int64, requerido): Valor de ventana de tiempo válido de la solicitud, Unidad: milisegundos.
+
+    Cuerpo de la Solicitud:
+    -----------------------
+    El cuerpo de la solicitud está vacío ({}).
+
+    Endpoint:
+    ---------
+    /openApi/spot/v1/account/balance
+
+    Respuesta:
+    ----------
+    La respuesta contiene un array de balances de activos con los siguientes campos:
+
+    - asset (string): Nombre del activo.
+    - free (string): Activo disponible.
+    - locked (string): Activo congelado.
+
+    Ejemplo de Respuesta:
+    ---------------------
+    {
+        "balances": [
+            {
+                "asset": "BTC",
+                "free": "0.001",
+                "locked": "0.000"
+            },
+            {
+                "asset": "ETH",
+                "free": "0.100",
+                "locked": "0.010"
+            }
+        ]
+    }
+
+    Códigos de Estado de Respuesta:
+    -------------------------------
+    - 200 OK: La solicitud se ha procesado correctamente.
+    - 400 Bad Request: La solicitud contiene un error (por ejemplo, timestamp no válido).
+    - 401 Unauthorized: La solicitud no está autorizada.
+    - 500 Internal Server Error: Error del servidor.
+    
+    """
     payload = {}
     path = '/openApi/spot/v1/account/balance'
     method = "GET"
@@ -12,7 +63,7 @@ async def get_balance_spot():
     paramsStr = parse_param(paramsMap)
     return send_request(method, path, paramsStr, payload)
 
-#! CURRENTLY NOT IMPLEMENTED AND ROUTED
+
 async def get_spot_deposit_records():
     """
     Obtiene los registros de depósitos spot.

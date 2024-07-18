@@ -13,3 +13,6 @@ BaseDiary = declarative_base()
 
 # Base for positions database
 BasePositions = declarative_base()
+
+# Base for accounts database
+BaseAccounts = declarative_base()

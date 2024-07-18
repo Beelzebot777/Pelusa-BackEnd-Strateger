@@ -4,7 +4,7 @@ from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession
 from sqlalchemy.orm import sessionmaker
 from app.config import settings
 from loguru import logger
-from app.siteground.base import BaseAlarmas, BaseEstrategias, BaseDiary, BasePositions
+from app.siteground.base import BaseAlarmas, BaseEstrategias, BaseDiary, BasePositions, BaseAccounts  # Añadir BaseAccounts
 
 # Configuración de las bases de datos
 engine_alarmas = create_async_engine(settings.DATABASE_URL_DESARROLLO_ALARMAS, pool_recycle=3600, pool_pre_ping=True)
@@ -18,6 +18,9 @@ SessionLocalDiary = sessionmaker(autocommit=False, autoflush=False, bind=engine_
 
 engine_positions = create_async_engine(settings.DATABASE_URL_DESARROLLO_POSITIONS, pool_recycle=3600, pool_pre_ping=True)
 SessionLocalPositions = sessionmaker(autocommit=False, autoflush=False, bind=engine_positions, class_=AsyncSession)
+
+engine_accounts = create_async_engine(settings.DATABASE_URL_DESARROLLO_ACCOUNTS, pool_recycle=3600, pool_pre_ping=True)  # Nueva base de datos
+SessionLocalAccounts = sessionmaker(autocommit=False, autoflush=False, bind=engine_accounts, class_=AsyncSession)  # Nueva sesión
 
 async def get_db_alarmas():
     async with SessionLocalAlarmas() as db:
@@ -35,6 +38,10 @@ async def get_db_positions():
     async with SessionLocalPositions() as db:
         yield db
 
+async def get_db_accounts():  
+    async with SessionLocalAccounts() as db:
+        yield db
+
 async def init_db_alarmas():
     async with engine_alarmas.begin() as conn:
         await conn.run_sync(BaseAlarmas.metadata.create_all)
@@ -50,10 +57,14 @@ async def init_db_diary():
 async def init_db_positions():
     async with engine_positions.begin() as conn:        
         await conn.run_sync(BasePositions.metadata.create_all)
-        
+
+async def init_db_accounts():  
+    async with engine_accounts.begin() as conn:
+        await conn.run_sync(BaseAccounts.metadata.create_all)
 
 async def close_db_connections():
     await engine_alarmas.dispose()
     await engine_estrategias.dispose()
     await engine_diary.dispose()
     await engine_positions.dispose()
+    await engine_accounts.dispose()  

@@ -10,6 +10,7 @@ class Settings:
     DATABASE_URL_DESARROLLO_ESTRATEGIAS = os.getenv("DATABASE_URL_DESARROLLO_ESTRATEGIAS").replace("pymysql", "aiomysql")
     DATABASE_URL_DESARROLLO_DIARY = os.getenv("DATABASE_URL_DESARROLLO_DIARY").replace("pymysql", "aiomysql")    
     DATABASE_URL_DESARROLLO_POSITIONS = os.getenv("DATABASE_URL_DESARROLLO_POSITIONS").replace("pymysql", "aiomysql")    
+    DATABASE_URL_DESARROLLO_ACCOUNTS = os.getenv("DATABASE_URL_DESARROLLO_ACCOUNTS").replace("pymysql", "aiomysql")    
     APIURL = os.getenv("APIURL")
     APIKEY = os.getenv("APIKEY")
     SECRETKEY = os.getenv("SECRETKEY")
