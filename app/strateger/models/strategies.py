@@ -7,7 +7,7 @@ class Strategy(BaseEstrategias):
     __tablename__ = 'tbl_strategies'
 
     id = Column(Integer, primary_key=True, index=True)
-    name = Column(String(100), nullable=True)
+    alarmName = Column(String(100), nullable=True)
     isOn = Column(Boolean, nullable=True)
     account_name = Column(String(255), nullable=True)
     account_type = Column(String(255), nullable=True)
