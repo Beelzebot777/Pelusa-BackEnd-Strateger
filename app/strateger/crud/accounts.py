@@ -1,1 +1,13 @@
-#Path: app/strateger/crud/accounts.py
+# Path: app/strateger/crud/accounts.py
+
+from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.future import select
+from sqlalchemy.exc import SQLAlchemyError
+from app.strateger.models.accounts import Account
+
+async def get_all_accounts(db: AsyncSession):
+    try:
+        result = await db.execute(select(Account))
+        return result.scalars().all()
+    except SQLAlchemyError as e:
+        raise HTTPException(status_code=400, detail=str(e))

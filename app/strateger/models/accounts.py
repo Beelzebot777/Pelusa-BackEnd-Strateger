@@ -1,8 +1,9 @@
 # Path: app/strateger/models/accounts.py
+
 from sqlalchemy import Column, String, Float, DateTime, Integer
 from app.siteground.base import BaseAccounts  # O la base de tu modelo, si tiene otro nombre
 
-class AccountBalance(BaseAccounts):
+class Account(BaseAccounts):
     __tablename__ = 'tbl_bingx_account'
 
     id = Column(Integer, primary_key=True, index=True)

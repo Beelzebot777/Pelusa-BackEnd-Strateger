@@ -1,9 +1,10 @@
 # Path: app/strateger/schemas/accounts.py
+
 from pydantic import BaseModel
 from datetime import datetime
-from typing import Optional
+from typing import Optional, List
 
-class AccountBalanceBase(BaseModel):
+class AccountBase(BaseModel):
     accountName: str
     accountType: str
     asset: str
@@ -15,20 +16,17 @@ class AccountBalanceBase(BaseModel):
     availableMargin: Optional[float] = None
     usedMargin: Optional[float] = None
 
-class AccountBalanceCreate(AccountBalanceBase):
-    pass
-
-class AccountBalanceInDB(AccountBalanceBase):
+class AccountInDB(AccountBase):
     id: int
 
     class Config:
-        orm_mode = True
+        from_attributes = True  # Use 'from_attributes' instead of 'orm_mode' in Pydantic V2
 
-class AccountBalanceResponse(BaseModel):
+class AccountListResponse(BaseModel):
     code: int
     msg: str
     timestamp: int
-    data: Optional[AccountBalanceInDB]
+    data: List[AccountInDB]
 
     class Config:
-        orm_mode = True
+        from_attributes = True  # Use 'from_attributes' instead of 'orm_mode' in Pydantic V2

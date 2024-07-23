@@ -5,7 +5,7 @@ from app.bingx.api.api_coinm import get_positions_perp_coinm, get_balance_perp_c
 from app.bingx.api.api_spot import get_balance_spot
 from app.siteground.database import get_db_positions, get_db_accounts
 from app.strateger.models.positions import Position
-from app.strateger.models.accounts import AccountBalance
+from app.strateger.models.accounts import Account
 from sqlalchemy.ext.asyncio import AsyncSession
 from loguru import logger
 import json
@@ -85,7 +85,7 @@ async def fetch_and_save_balance(db: AsyncSession, get_balance_func, account_nam
             if balance_amount == 0:
                 continue
 
-            db_balance = AccountBalance(
+            db_balance = Account(
                 accountName=account_name,
                 accountType=account_type,
                 asset=balance['asset'],
