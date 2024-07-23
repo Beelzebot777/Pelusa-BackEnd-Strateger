@@ -19,11 +19,13 @@ async def crear_operacion(variables: dict, db_alarmas: AsyncSession, db_estrateg
     Returns:
         - None
     """
+    
     type_operation = variables.get('Order', '').lower()
     ticker = variables.get('Ticker')
     strategy_name = variables.get('Strategy')
     temporalidad = variables.get('Temporalidad')
 
+    
     # Si la orden es un indicador de apertura o cierre, no se realiza ninguna operación
     if type_operation in ['indicator open long', 'indicator open short', 'indicator close long', 'indicator close short']:
         logger.info(f"Operación de tipo indicador no requiere acción: {variables['Order']}")
@@ -40,13 +42,13 @@ async def crear_operacion(variables: dict, db_alarmas: AsyncSession, db_estrateg
 
     for strategy in strategies:
         if not strategy.isOn:
-            logger.warning(f"La estrategia {strategy.name} está apagada.")
+            logger.warning(f"La estrategia con Alarm Name:{strategy.alarmName} e Id: {strategy.id} está apagada.")
             continue
 
         if type_operation in ['order open long']:
             if strategy.longEntryOrder == temporalidad:
-                ultima_alarm_indicator_open_long = await get_latest_alarm_with_entry(db_alarmas, strategy.name, strategy.ticker, 'indicator open long', strategy.longEntryIndicator)
-                ultima_alarm_indicator_close_long = await get_latest_alarm_with_entry(db_alarmas, strategy.name, strategy.ticker, 'indicator close long', strategy.longCloseIndicator)
+                ultima_alarm_indicator_open_long = await get_latest_alarm_with_entry(db_alarmas, strategy.alarmName, strategy.ticker, 'indicator open long', strategy.longEntryIndicator)
+                ultima_alarm_indicator_close_long = await get_latest_alarm_with_entry(db_alarmas, strategy.alarmName, strategy.ticker, 'indicator close long', strategy.longCloseIndicator)
 
                 logger.debug(f"Ultima alarma con indicador de apertura de posición larga: {ultima_alarm_indicator_open_long.id}")
                 logger.debug(f"Ultima alarma con indicador de cierre de posición larga: {ultima_alarm_indicator_close_long.id}")
@@ -71,8 +73,8 @@ async def crear_operacion(variables: dict, db_alarmas: AsyncSession, db_estrateg
 
         elif type_operation in ['order open short']:
             if strategy.shortEntryOrder == temporalidad:
-                ultima_alarm_indicator_open_short = await get_latest_alarm_with_entry(db_alarmas, strategy.name, strategy.ticker, 'indicator open short', strategy.shortEntryIndicator)
-                ultima_alarm_indicator_close_short = await get_latest_alarm_with_entry(db_alarmas, strategy.name, strategy.ticker, 'indicator close short', strategy.shortCloseIndicator)
+                ultima_alarm_indicator_open_short = await get_latest_alarm_with_entry(db_alarmas, strategy.alarmName, strategy.ticker, 'indicator open short', strategy.shortEntryIndicator)
+                ultima_alarm_indicator_close_short = await get_latest_alarm_with_entry(db_alarmas, strategy.alarmName, strategy.ticker, 'indicator close short', strategy.shortCloseIndicator)
 
                 logger.debug(f"Ultima alarma con indicador de apertura de posición corta: {ultima_alarm_indicator_open_short.id}")
                 logger.debug(f"Ultima alarma con indicador de cierre de posición corta: {ultima_alarm_indicator_close_short.id}")

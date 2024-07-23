@@ -38,6 +38,6 @@ async def crud_delete_strategy(db: AsyncSession, strategy_id: int):
 
 async def get_strategy_by_name_and_ticker(db: AsyncSession, strategy_name: str, ticker: str):
     result = await db.execute(
-        select(Strategy).where(Strategy.name == strategy_name).where(Strategy.ticker == ticker)
+        select(Strategy).where(Strategy.alarmName == strategy_name).where(Strategy.ticker == ticker)
     )
     return result.scalars().all()
