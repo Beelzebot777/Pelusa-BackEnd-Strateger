@@ -12,6 +12,18 @@ router = APIRouter()
 
 @router.get("/get-all-data", response_model=AccountListResponse)
 async def get_all_accounts_endpoint(db: AsyncSession = Depends(get_db_accounts)):
+    """
+    Retrieve all accounts from the database.
+
+    Args:
+        db (AsyncSession): The database session.
+
+    Returns:
+        AccountListResponse: The response containing the list of accounts.
+
+    Raises:
+        HTTPException: If there is an error retrieving the accounts from the database.
+    """
     try:
         accounts = await get_all_accounts(db)
     except SQLAlchemyError as e:
