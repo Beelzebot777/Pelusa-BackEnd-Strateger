@@ -28,20 +28,6 @@ async def close_all_positions_usdtm(symbol):
     paramsStr = parse_param(paramsMap)
     return send_request(method, path, paramsStr, payload)
 
-async def get_k_line_data(symbol, interval, limit, start_time, end_time):
-    payload = {}
-    path = '/openApi/swap/v3/quote/klines'
-    method = "GET"
-    paramsMap = {
-        "symbol": symbol,
-        "interval": interval,
-        "limit": limit,
-        "startTime": date_to_milliseconds(start_time),
-        "endTime": date_to_milliseconds(end_time)
-    }
-    paramsStr = parse_param(paramsMap)
-    return send_request(method, path, paramsStr, payload)
-
 async def get_balance_perp_usdtm():
     """
     Retrieves the balance for the USDTM perpetual contract.

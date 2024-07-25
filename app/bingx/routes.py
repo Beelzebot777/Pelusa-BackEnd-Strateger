@@ -4,9 +4,9 @@
 from fastapi import APIRouter, Depends, HTTPException, Request
 
 from app.bingx.api.api_coinm import get_balance_perp_coinm, get_positions_perp_coinm
-from app.bingx.api.api_main import get_ticker
+from app.bingx.api.api_main import get_ticker, get_k_line_data
 from app.bingx.api.api_spot import get_balance_spot, get_spot_deposit_records
-from app.bingx.api.api_usdtm import get_k_line_data, get_balance_perp_usdtm, get_income_acc, get_all_orders, get_full_all_orders, get_positions_usdtm, make_order_usdtm
+from app.bingx.api.api_usdtm import get_balance_perp_usdtm, get_income_acc, get_all_orders, get_full_all_orders, get_positions_usdtm, make_order_usdtm
 
 from loguru import logger
 from app.utils.ip_check import is_ip_allowed
