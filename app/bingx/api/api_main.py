@@ -1,3 +1,5 @@
+#Path: app/bingx/api/api_main.py
+
 # Description: Main functions generic for BingX exchange
 import time
 from .api_utils import send_request, parse_param, date_to_milliseconds
