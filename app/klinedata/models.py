@@ -7,6 +7,7 @@ class KlineData(BaseKLineData):
     __tablename__ = 'tbl_kline_data_btc'
     
     id = Column(Integer, primary_key=True, index=True)
+    intervals = Column(String(50), nullable=False)
     symbol = Column(String(50), index=True)
     open = Column(Float)
     close = Column(Float)

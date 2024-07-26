@@ -4,6 +4,7 @@ from pydantic import BaseModel
 
 class KlineDataCreate(BaseModel):
     symbol: str
+    intervals: str
     open: float
     close: float
     high: float
