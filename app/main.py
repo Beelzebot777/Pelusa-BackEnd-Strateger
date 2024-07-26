@@ -7,7 +7,7 @@ from fastapi.staticfiles import StaticFiles
 import asyncio
 from loguru import logger
 from contextlib import asynccontextmanager
-from app.siteground.database import close_db_connections, init_db_alarmas, init_db_estrategias, init_db_diary, init_db_positions, init_db_accounts
+from app.siteground.database import close_db_connections, init_db_alarmas, init_db_estrategias, init_db_diary, init_db_positions, init_db_accounts, init_db_kline_data
 from app.utils.server_status import log_server_status
 from app.server.middlewares import AllowedIPsMiddleware, InvalidRequestLoggingMiddleware, LogResponseMiddleware
 from fastapi.middleware.cors import CORSMiddleware
@@ -15,6 +15,7 @@ from app.alarms.routes import router as alarms_router
 from app.bingx.routes import router as bingx_router
 from app.strateger.strateger import router as strateger_router
 from app.server.routes import router as server_router
+from app.klinedata.routes import router as kline_data_router
 from app.config import settings
 from app.strateger.utils.tasks import background_tasks
 
@@ -30,7 +31,8 @@ async def lifespan(app: FastAPI):
         await init_db_estrategias()       
         await init_db_diary() 
         await init_db_positions()
-        await init_db_accounts()                        
+        await init_db_accounts()
+        await init_db_kline_data()           
         logger.info("Databases: OK")
 
         # Iniciar la tarea en segundo plano
@@ -90,3 +92,4 @@ app.include_router(alarms_router, prefix="/alarms", tags=["alarms"])
 app.include_router(bingx_router, prefix="/bingx", tags=["bingx"])
 app.include_router(strateger_router, prefix="/strateger", tags=["strateger"])
 app.include_router(server_router, prefix="/server", tags=["server"])
+app.include_router(kline_data_router, prefix="/klinedata", tags=["kline_data"])
