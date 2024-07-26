@@ -7,7 +7,7 @@ from app.klinedata.crud import save_kline_data, get_kline_data
 from app.utils.ip_check import is_ip_allowed
 from loguru import logger
 from app.bingx.api.api_main import get_k_line_data
-from datetime import datetime
+from datetime import datetime, timedelta
 
 import json
 
@@ -41,6 +41,31 @@ async def get_kline_data_endpoint(
         logger.error(f"Error fetching kline data: {e}")
         raise HTTPException(status_code=500, detail="Internal server error")
 
+
+def calculate_units_between_dates(start_date: str, end_date: str, interval: str) -> int:
+    start_datetime = datetime.strptime(start_date, '%Y-%m-%d')
+    end_datetime = datetime.strptime(end_date, '%Y-%m-%d')
+    time_difference = end_datetime - start_datetime
+
+    interval_mapping = {
+        '1m': 1,
+        '5m': 5,
+        '15m': 15,
+        '30m': 30,
+        '1h': 60,
+        '4h': 240,
+        'D': 1440,
+        'W': 10080,
+        'M': 43200,
+    }
+
+    if interval not in interval_mapping:
+        raise ValueError("Invalid interval")
+
+    minutes_per_unit = interval_mapping[interval]
+    total_minutes = time_difference.days * 24 * 60 + time_difference.seconds // 60
+    return total_minutes // minutes_per_unit
+
 @router.get('/fill-kline-data-historical')
 async def fill_kline_data_historical(
     request: Request,
@@ -60,33 +85,67 @@ async def fill_kline_data_historical(
         start_time = datetime.strptime(start_date, '%Y-%m-%d')
         end_time = datetime.strptime(end_date, '%Y-%m-%d')
 
-        kline_data = await get_k_line_data(symbol, interval, 1000, str(start_time), str(end_time))
+        # Calcular el número de unidades de tiempo entre las fechas
+        total_units = calculate_units_between_dates(start_date, end_date, interval)
+        logger.debug(f"Total units between {start_date} and {end_date}: {total_units}")
 
-        # Si kline_data es un string, intente convertirlo a JSON
-        if isinstance(kline_data, str):
-            try:
-                kline_data = json.loads(kline_data)
-            except json.JSONDecodeError as e:
-                logger.error(f"Error decoding JSON: {e}")
-                raise HTTPException(status_code=400, detail="Invalid JSON response")
+        # Determinar el tamaño de la ventana de solicitud en unidades de tiempo
+        max_units_per_request = 1000
+        unit_mapping = {
+            '1m': timedelta(minutes=1),
+            '5m': timedelta(minutes=5),
+            '15m': timedelta(minutes=15),
+            '30m': timedelta(minutes=30),
+            '1h': timedelta(hours=1),
+            '4h': timedelta(hours=4),
+            'D': timedelta(days=1),
+            'W': timedelta(weeks=1),
+            'M': timedelta(days=30),  # Aproximación de un mes
+        }
+        
+        if interval not in unit_mapping:
+            raise HTTPException(status_code=400, detail="Invalid interval")
 
-        # Verifica que la estructura del JSON sea la esperada
-        if 'data' not in kline_data or not isinstance(kline_data['data'], list):
-            raise HTTPException(status_code=400, detail="Invalid response structure")        
+        # Iterar para obtener todos los datos necesarios
+        current_start_time = start_time
+        while current_start_time < end_time:
+            current_end_time = current_start_time + unit_mapping[interval] * max_units_per_request
+            if current_end_time > end_time:
+                current_end_time = end_time
 
-        for data in kline_data['data']:
-            logger.debug(f"Processing data: {data}")
-            kline_record = KlineDataCreate(
-                symbol=symbol,
-                open=float(data.get('open', 0)),
-                close=float(data.get('close', 0)),
-                high=float(data.get('high', 0)),
-                low=float(data.get('low', 0)),
-                volume=float(data.get('volume', 0)),
-                time=int(data.get('time', 0)),
-                intervals=interval
+            kline_data = await get_k_line_data(
+                symbol, interval, max_units_per_request, str(current_start_time), str(current_end_time)
             )
-            await save_kline_data(db, kline_record)
+
+            # Si kline_data es un string, intente convertirlo a JSON
+            if isinstance(kline_data, str):
+                try:
+                    kline_data = json.loads(kline_data)
+                except json.JSONDecodeError as e:
+                    logger.error(f"Error decoding JSON: {e}")
+                    raise HTTPException(status_code=400, detail="Invalid JSON response")
+
+            # Verifica que la estructura del JSON sea la esperada
+            if 'data' not in kline_data or not isinstance(kline_data['data'], list):
+                raise HTTPException(status_code=400, detail="Invalid response structure")
+
+            logger.debug(f"K-Line data fetched: {kline_data}")
+
+            for data in kline_data['data']:
+                logger.debug(f"Processing data: {data}")
+                kline_record = KlineDataCreate(
+                    symbol=symbol,
+                    open=float(data.get('open', 0)),
+                    close=float(data.get('close', 0)),
+                    high=float(data.get('high', 0)),
+                    low=float(data.get('low', 0)),
+                    volume=float(data.get('volume', 0)),
+                    time=int(data.get('time', 0)),
+                    intervals=interval
+                )
+                await save_kline_data(db, kline_record)
+
+            current_start_time = current_end_time
 
         return {"message": "Historical K-Line data saved successfully."}
     except Exception as e:
