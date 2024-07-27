@@ -2,10 +2,11 @@
 
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
-from sqlalchemy.exc import SQLAlchemyError
+from sqlalchemy.exc import SQLAlchemyError, IntegrityError
 from app.klinedata.models import KlineData
 from app.klinedata.schemas import KlineDataCreate
 from fastapi import HTTPException
+from loguru import logger
 
 async def save_kline_data(db: AsyncSession, kline_data: KlineDataCreate):
     try:
@@ -14,6 +15,10 @@ async def save_kline_data(db: AsyncSession, kline_data: KlineDataCreate):
         await db.commit()
         await db.refresh(db_kline_data)
         return db_kline_data
+    except IntegrityError:
+        await db.rollback()
+        logger.warning(f"K-line data already exists: {kline_data}")
+        return None
     except SQLAlchemyError as e:
         await db.rollback()
         raise HTTPException(status_code=500, detail=f"Error saving K-line data: {str(e)}")
