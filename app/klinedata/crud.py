@@ -9,7 +9,7 @@ from fastapi import HTTPException
 
 async def save_kline_data(db: AsyncSession, kline_data: KlineDataCreate):
     try:
-        db_kline_data = KlineData(**kline_data.dict())
+        db_kline_data = KlineData(**kline_data.model_dump())
         db.add(db_kline_data)
         await db.commit()
         await db.refresh(db_kline_data)

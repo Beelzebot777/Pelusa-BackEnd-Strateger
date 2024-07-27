@@ -1,6 +1,6 @@
 # Path: app/klinedata/models.py
 
-from sqlalchemy import Column, Integer, Float, String
+from sqlalchemy import Column, Integer, Float, String, BigInteger, UniqueConstraint
 from app.siteground.base import BaseKLineData
 
 class KlineData(BaseKLineData):
@@ -14,4 +14,8 @@ class KlineData(BaseKLineData):
     high = Column(Float)
     low = Column(Float)
     volume = Column(Float)
-    time = Column(Integer, index=True)
+    time = Column(BigInteger, index=True)
+
+    __table_args__ = (
+        UniqueConstraint('intervals', 'symbol', 'time', name='unique_intervals_symbol_time'),
+    )

@@ -129,7 +129,7 @@ async def fill_kline_data_historical(
             if 'data' not in kline_data or not isinstance(kline_data['data'], list):
                 raise HTTPException(status_code=400, detail="Invalid response structure")
 
-            logger.debug(f"K-Line data fetched: {kline_data}")
+            #logger.debug(f"K-Line data fetched: {kline_data}")
 
             for data in kline_data['data']:
                 logger.debug(f"Processing data: {data}")
@@ -143,6 +143,7 @@ async def fill_kline_data_historical(
                     time=int(data.get('time', 0)),
                     intervals=interval
                 )
+                logger.debug(f"Saving K-Line data: {kline_record}")
                 await save_kline_data(db, kline_record)
 
             current_start_time = current_end_time
