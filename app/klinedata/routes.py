@@ -2,12 +2,15 @@ from fastapi import APIRouter, Depends, HTTPException, Request, Query
 from sqlalchemy.ext.asyncio import AsyncSession
 from typing import List
 from app.siteground.database import get_db_kline_data
-from app.klinedata.schemas import KlineDataCreate
+from app.klinedata.schemas import KlineDataCreate, Interval
 from app.klinedata.crud import save_kline_data, get_kline_data
 from app.utils.ip_check import is_ip_allowed
 from loguru import logger
+
 from app.bingx.api.api_main import get_k_line_data
 from datetime import datetime, timedelta
+
+from typing import List, Dict, Any
 
 import json
 
@@ -24,23 +27,6 @@ async def create_kline_data(kline_data: KlineDataCreate, db: AsyncSession = Depe
     except Exception as e:
         logger.error(f"Error saving kline data: {e}")
         raise HTTPException(status_code=500, detail="Internal server error")
-
-@router.get("/get_kline_data", response_model=List[KlineDataCreate])
-async def get_kline_data_endpoint(
-    symbol: str, 
-    db: AsyncSession = Depends(get_db_kline_data), 
-    limit: int = Query(default=100, ge=1)
-):
-    try:
-        kline_data = await get_kline_data(db, symbol, limit)
-        return kline_data
-    except HTTPException as e:
-        logger.error(f"HTTP error fetching kline data: {e.detail}")
-        raise
-    except Exception as e:
-        logger.error(f"Error fetching kline data: {e}")
-        raise HTTPException(status_code=500, detail="Internal server error")
-
 
 @router.get('/fill-kline-data-historical')
 async def fill_kline_data_historical(
@@ -82,6 +68,7 @@ async def fill_kline_data_historical(
 
         current_start_time = start_time
         while current_start_time < end_time:
+            logger.debug(f"Fetching data from {current_start_time} to {current_start_time + unit_mapping[interval] * max_units_per_request}")
             current_end_time = current_start_time + unit_mapping[interval] * max_units_per_request
             if current_end_time > end_time:
                 current_end_time = end_time
@@ -148,3 +135,36 @@ def calculate_units_between_dates(start_date: str, end_date: str, interval: str)
     minutes_per_unit = interval_mapping[interval]
     total_minutes = time_difference.days * 24 * 60 + time_difference.seconds // 60
     return total_minutes // minutes_per_unit
+
+
+
+@router.get("/get-kline-data", response_model=List[Dict[str, Any]])
+async def get_kline_data_endpoint(
+    symbol: str, 
+    intervals: Interval, 
+    start_date: str,
+    end_date: str,
+    db: AsyncSession = Depends(get_db_kline_data), 
+    limit: int = Query(default=10000, ge=1)
+):
+    try:
+        kline_data = await get_kline_data(db, symbol, intervals.value, start_date, end_date, limit)
+        
+        if not kline_data:
+            raise HTTPException(status_code=404, detail="No data found")
+        
+        # Convertir cada instancia de kline_data a un diccionario
+        kline_data_serializable = [data.__dict__ for data in kline_data]
+
+        # Eliminar la clave '_sa_instance_state' que añade SQLAlchemy
+        for data in kline_data_serializable:
+            data.pop('_sa_instance_state', None)
+        
+        return kline_data_serializable
+
+    except HTTPException as e:
+        logger.error(f"HTTP error fetching kline data: {e.detail}")
+        raise
+    except Exception as e:
+        logger.error(f"Error fetching kline data: {e}")
+        raise HTTPException(status_code=500, detail="Internal server error")
