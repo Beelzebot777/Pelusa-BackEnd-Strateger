@@ -32,9 +32,25 @@ async def get_kline_data_endpoint(
     intervals: Interval, 
     start_date: str,
     end_date: str,
+    initial_balance: float = Query(default=10000),
     db: AsyncSession = Depends(get_db_kline_data), 
     limit: int = Query(default=10000, ge=1)
 ):
+    """
+    Retrieve kline data for a given symbol and perform stochastic technical analysis.
+    
+    Parameters:
+    - symbol (str): The symbol for which to retrieve kline data.
+    - intervals (Interval): The interval of the kline data.
+    - start_date (str): The start date of the kline data.
+    - end_date (str): The end date of the kline data.
+    - db (AsyncSession): The database session to use for retrieving kline data.
+    - initial_balance (float): The initial balance for backtesting.
+    - limit (int): The maximum number of kline data points to retrieve.
+    
+    Returns:
+    - result (dict): A dictionary containing the results of the backtesting, including various metrics and data.
+    """
     try:
         kline_data = await get_kline_data(db, symbol, intervals.value, start_date, end_date, limit)
         
@@ -59,8 +75,7 @@ async def get_kline_data_endpoint(
         df['exit_short'] = crossover(df['stoch_k'], df['stoch_d']) & (df['stoch_k'] < oversold_level)
 
         # Simular las operaciones
-        position = 0
-        initial_balance = 10000
+        position = 0        
         balance = initial_balance
         balances = [balance]
         positions = []
