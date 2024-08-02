@@ -86,6 +86,7 @@ async def get_kline_data_endpoint(
                 position = 1
                 entry_price = df['close'][i]
                 positions.append(('Buy', int(df['time'][i]), float(entry_price)))
+                balances.append(balance)  # Registrar el balance al entrar en la posición
             elif df['exit_long'][i] and position == 1:
                 # Exit long position
                 position = 0
@@ -100,6 +101,7 @@ async def get_kline_data_endpoint(
                 position = -1
                 entry_price = df['close'][i]
                 positions.append(('Sell', int(df['time'][i]), float(entry_price)))
+                balances.append(balance)  # Registrar el balance al entrar en la posición
             elif df['exit_short'][i] and position == -1:
                 # Exit short position
                 position = 0
