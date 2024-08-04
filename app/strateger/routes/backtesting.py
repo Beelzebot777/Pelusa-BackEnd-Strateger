@@ -33,6 +33,8 @@ async def get_kline_data_endpoint(
     start_date: str,
     end_date: str,
     initial_balance: float = Query(default=10000),
+    enable_long: bool = Query(default=True),  # Parámetro para habilitar/deshabilitar operaciones en long
+    enable_short: bool = Query(default=False), # Parámetro para habilitar/deshabilitar operaciones en short
     db: AsyncSession = Depends(get_db_kline_data), 
     limit: int = Query(default=10000, ge=1)
 ):
@@ -46,6 +48,8 @@ async def get_kline_data_endpoint(
     - end_date (str): The end date of the kline data.
     - db (AsyncSession): The database session to use for retrieving kline data.
     - initial_balance (float): The initial balance for backtesting.
+    - enable_long (bool): Whether to enable long operations.
+    - enable_short (bool): Whether to enable short operations.
     - limit (int): The maximum number of kline data points to retrieve.
     
     Returns:
@@ -59,34 +63,37 @@ async def get_kline_data_endpoint(
 
         # Convertir los datos a un DataFrame de pandas
         df = pd.DataFrame([data.__dict__ for data in kline_data])
+        
+        logger.debug(f"Kline data: {df}")
 
         # Calcular el indicador estocástico
         df['stoch_k'] = ta.momentum.stoch(df['high'], df['low'], df['close'], window=14, smooth_window=3)
         df['stoch_d'] = ta.momentum.stoch_signal(df['high'], df['low'], df['close'], window=14, smooth_window=3)
 
         # Inicializa variables para niveles de sobrecompra y sobrevendido
-        overbought_level = 87
-        oversold_level = 40
+        overbought_level = 79
+        oversold_level = 30
 
         # Condiciones para entrar y salir de una operación
-        df['enter_long'] = crossover(df['stoch_k'], df['stoch_d']) & (df['stoch_k'] < oversold_level)
-        df['exit_long'] = crossunder(df['stoch_k'], df['stoch_d']) & (df['stoch_k'] > overbought_level)
-        df['enter_short'] = crossunder(df['stoch_k'], df['stoch_d']) & (df['stoch_k'] > overbought_level)
-        df['exit_short'] = crossover(df['stoch_k'], df['stoch_d']) & (df['stoch_k'] < oversold_level)
+        df['enter_long'] = enable_long and crossover(df['stoch_k'], df['stoch_d']) & (df['stoch_k'] < oversold_level)
+        df['exit_long'] = enable_long and crossunder(df['stoch_k'], df['stoch_d']) & (df['stoch_k'] > overbought_level)
+        df['enter_short'] = enable_short and crossunder(df['stoch_k'], df['stoch_d']) & (df['stoch_k'] > overbought_level)
+        df['exit_short'] = enable_short and crossover(df['stoch_k'], df['stoch_d']) & (df['stoch_k'] < oversold_level)
 
         # Simular las operaciones
         position = 0        
         balance = initial_balance
-        balances = [balance]
+        balances = []
         positions = []
         returns = []
-        for i in range(1, len(df)):
+        for i in range(0, len(df)):
             if df['enter_long'][i] and position == 0:
                 # Enter long position
                 position = 1
                 entry_price = df['close'][i]
-                positions.append(('Buy', int(df['time'][i]), float(entry_price)))
-                balances.append(balance)  # Registrar el balance al entrar en la posición
+                positions.append(('Long', int(df['time'][i]), float(entry_price)))
+                balances.append((balance, int(df['time'][i])))  
+                logger.debug(f" i: {i}, balance: {balance}, time: {int(df['time'][i])}")
             elif df['exit_long'][i] and position == 1:
                 # Exit long position
                 position = 0
@@ -94,14 +101,16 @@ async def get_kline_data_endpoint(
                 profit = (exit_price - entry_price) * (balance / entry_price)
                 balance += profit
                 returns.append(profit / initial_balance)
-                balances.append(balance)
-                positions.append(('Sell', int(df['time'][i]), float(exit_price), float(profit)))
+                balances.append((balance, int(df['time'][i])))  
+                logger.debug(f" i: {i}, balance: {balance}, time: {int(df['time'][i])}")
+                positions.append(('Close Long', int(df['time'][i]), float(exit_price), float(profit)))
             elif df['enter_short'][i] and position == 0:
                 # Enter short position
                 position = -1
                 entry_price = df['close'][i]
-                positions.append(('Sell', int(df['time'][i]), float(entry_price)))
-                balances.append(balance)  # Registrar el balance al entrar en la posición
+                positions.append(('Short', int(df['time'][i]), float(entry_price)))
+                balances.append((balance, int(df['time'][i])))  
+                logger.debug(f" i: {i}, balance: {balance}, time: {int(df['time'][i])}")
             elif df['exit_short'][i] and position == -1:
                 # Exit short position
                 position = 0
@@ -109,10 +118,12 @@ async def get_kline_data_endpoint(
                 profit = (entry_price - exit_price) * (balance / entry_price)
                 balance += profit
                 returns.append(profit / initial_balance)
-                balances.append(balance)
-                positions.append(('Buy', int(df['time'][i]), float(exit_price), float(profit)))
+                balances.append((balance, int(df['time'][i])))  
+                logger.debug(f" i: {i}, balance: {balance}, time: {int(df['time'][i])}")
+                positions.append(('Close Short', int(df['time'][i]), float(exit_price), float(profit)))
             else:
-                balances.append(balance)
+                balances.append((balance, int(df['time'][i])))  
+                logger.debug(f" i: {i}, balance: {balance}, time: {int(df['time'][i])}")
 
         # Calcular el rendimiento acumulativo de la estrategia
         cumulative_returns = (balance - initial_balance) / initial_balance
@@ -138,6 +149,13 @@ async def get_kline_data_endpoint(
                 "price": pos[2],
                 "profit": pos[3] if len(pos) == 4 else None
             } for pos in positions
+        ]
+        
+        balances_serializable = [
+            {
+                "balance": bal[0],
+                "time": bal[1]
+            } for bal in balances
         ]
 
         kline_data_serializable = [
@@ -166,8 +184,8 @@ async def get_kline_data_endpoint(
             "win_rate": win_rate,
             "gain_to_loss_ratio": gain_to_loss_ratio,
             "size_kline_data": len(kline_data),
-            "balances": balances,
-            "signals": df[['stoch_k', 'stoch_d', 'enter_long', 'exit_long', 'enter_short', 'exit_short']].to_dict('records'),
+            "balances": balances_serializable,
+            "signals": df[['stoch_k', 'stoch_d', 'enter_long', 'exit_long', 'enter_short', 'exit_short', 'time']].to_dict('records'),
             "positions": positions_serializable,
             "kline_data": kline_data_serializable,                                   
         }
@@ -180,3 +198,4 @@ async def get_kline_data_endpoint(
     except Exception as e:
         logger.error(f"Error fetching kline data: {e}")
         raise HTTPException(status_code=500, detail="Internal server error")
+
