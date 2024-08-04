@@ -44,8 +44,7 @@ async def get_kline_data(db: AsyncSession, symbol: str, intervals: str, start_da
                 KlineData.intervals == intervals,
                 KlineData.time >= start_timestamp,
                 KlineData.time <= end_timestamp
-            )
-            .order_by(KlineData.time.desc())
+            )            
             .limit(effective_limit)
         )
         result = await db.execute(query)
