@@ -33,8 +33,8 @@ async def get_kline_data_endpoint(
     start_date: str,
     end_date: str,
     initial_balance: float = Query(default=10000),
-    enable_long: bool = Query(default=True),  # Parámetro para habilitar/deshabilitar operaciones en long
-    enable_short: bool = Query(default=False), # Parámetro para habilitar/deshabilitar operaciones en short
+    enable_long: bool = Query(default=True),  
+    enable_short: bool = Query(default=True), 
     db: AsyncSession = Depends(get_db_kline_data), 
     limit: int = Query(default=10000, ge=1)
 ):
@@ -55,16 +55,15 @@ async def get_kline_data_endpoint(
     Returns:
     - result (dict): A dictionary containing the results of the backtesting, including various metrics and data.
     """
-    try:
+    try:                
+        
         kline_data = await get_kline_data(db, symbol, intervals.value, start_date, end_date, limit)
         
         if not kline_data:
             raise HTTPException(status_code=404, detail="No data found")
 
         # Convertir los datos a un DataFrame de pandas
-        df = pd.DataFrame([data.__dict__ for data in kline_data])
-        
-        logger.debug(f"Kline data: {df}")
+        df = pd.DataFrame([data.__dict__ for data in kline_data])                
 
         # Calcular el indicador estocástico
         df['stoch_k'] = ta.momentum.stoch(df['high'], df['low'], df['close'], window=14, smooth_window=3)
@@ -92,8 +91,7 @@ async def get_kline_data_endpoint(
                 position = 1
                 entry_price = df['close'][i]
                 positions.append(('Long', int(df['time'][i]), float(entry_price)))
-                balances.append((balance, int(df['time'][i])))  
-                logger.debug(f" i: {i}, balance: {balance}, time: {int(df['time'][i])}")
+                balances.append((balance, int(df['time'][i])))                  
             elif df['exit_long'][i] and position == 1:
                 # Exit long position
                 position = 0
@@ -101,16 +99,14 @@ async def get_kline_data_endpoint(
                 profit = (exit_price - entry_price) * (balance / entry_price)
                 balance += profit
                 returns.append(profit / initial_balance)
-                balances.append((balance, int(df['time'][i])))  
-                logger.debug(f" i: {i}, balance: {balance}, time: {int(df['time'][i])}")
+                balances.append((balance, int(df['time'][i])))                  
                 positions.append(('Close Long', int(df['time'][i]), float(exit_price), float(profit)))
             elif df['enter_short'][i] and position == 0:
                 # Enter short position
                 position = -1
                 entry_price = df['close'][i]
                 positions.append(('Short', int(df['time'][i]), float(entry_price)))
-                balances.append((balance, int(df['time'][i])))  
-                logger.debug(f" i: {i}, balance: {balance}, time: {int(df['time'][i])}")
+                balances.append((balance, int(df['time'][i])))                  
             elif df['exit_short'][i] and position == -1:
                 # Exit short position
                 position = 0
@@ -118,12 +114,10 @@ async def get_kline_data_endpoint(
                 profit = (entry_price - exit_price) * (balance / entry_price)
                 balance += profit
                 returns.append(profit / initial_balance)
-                balances.append((balance, int(df['time'][i])))  
-                logger.debug(f" i: {i}, balance: {balance}, time: {int(df['time'][i])}")
+                balances.append((balance, int(df['time'][i])))                  
                 positions.append(('Close Short', int(df['time'][i]), float(exit_price), float(profit)))
             else:
-                balances.append((balance, int(df['time'][i])))  
-                logger.debug(f" i: {i}, balance: {balance}, time: {int(df['time'][i])}")
+                balances.append((balance, int(df['time'][i])))                  
 
         # Calcular el rendimiento acumulativo de la estrategia
         cumulative_returns = (balance - initial_balance) / initial_balance
