@@ -19,3 +19,6 @@ BaseAccounts = declarative_base()
 
 # Base for k-line data in database
 BaseKLineData = declarative_base()
+
+# Base for orders database
+BaseOrders = declarative_base()

@@ -1,7 +1,7 @@
 # app/alarms/models.py
 # Descripción: SQLAlchemy models para las alarmas en la base de datos de Siteground
 
-from sqlalchemy import Column, Integer, String, DateTime
+from sqlalchemy import Column, Integer, String
 from app.siteground.base import BaseAlarmas
 
 class Alarm(BaseAlarmas):

@@ -1,21 +1,22 @@
 # Path: app/main.py
 
-from datetime import datetime
 from fastapi import FastAPI, Depends, HTTPException, Request
 from fastapi.responses import JSONResponse
 from fastapi.staticfiles import StaticFiles
 import asyncio
 from loguru import logger
 from contextlib import asynccontextmanager
-from app.siteground.database import close_db_connections, init_db_alarmas, init_db_estrategias, init_db_diary, init_db_positions, init_db_accounts, init_db_kline_data
+from app.siteground.database import close_db_connections, init_db_alarmas, init_db_estrategias, init_db_diary, init_db_positions, init_db_accounts, init_db_kline_data, init_db_orders
 from app.utils.server_status import log_server_status
 from app.server.middlewares import AllowedIPsMiddleware, InvalidRequestLoggingMiddleware, LogResponseMiddleware
 from fastapi.middleware.cors import CORSMiddleware
+
 from app.alarms.routes import router as alarms_router
 from app.bingx.routes import router as bingx_router
 from app.strateger.strateger import router as strateger_router
 from app.server.routes import router as server_router
 from app.klinedata.routes import router as kline_data_router
+
 from app.config import settings
 from app.strateger.utils.tasks import background_tasks
 
@@ -27,18 +28,21 @@ logger.add("logs/file_{time:YYYY-MM-DD}.log", rotation="00:00")
 async def lifespan(app: FastAPI):
     try:
         logger.info("Initializing databases...")
+        
         await init_db_alarmas()
         await init_db_estrategias()       
         await init_db_diary() 
         await init_db_positions()
         await init_db_accounts()
-        await init_db_kline_data()           
+        await init_db_kline_data()  
+        await init_db_orders()      
         logger.info("Databases: OK")
+        
 
         # Iniciar la tarea en segundo plano
         loop = asyncio.get_event_loop()
         loop.create_task(log_server_status())
-        #loop.create_task(background_tasks())               #! ESTA TAREA DEBERIA DESCOMENTARSE EN PRODUCCION
+        #loop.create_task(background_tasks()) 
 
         yield
     except Exception as e:

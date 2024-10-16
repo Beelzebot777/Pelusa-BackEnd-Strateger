@@ -3,8 +3,10 @@
 from fastapi import APIRouter, Depends, HTTPException, Request, Query       #FastAPI           
 from sqlalchemy.ext.asyncio import AsyncSession                             #Base de datos        
 from app.siteground.database import get_db_alarmas, get_db_estrategias      #Base de datos
+
 from app.alarms.schemas import AlarmCreate, AlarmResponse                   #Schemas   
 from app.alarms.crud import save_alarm, get_alarms                          #Base de datos
+
 from app.utils.ip_check import is_ip_allowed                                #Seguridad
 from app.alarms.utils import convierte_temporalidad                         #Utilidades
 
