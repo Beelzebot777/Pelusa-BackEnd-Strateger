@@ -4,9 +4,9 @@
 import time
 from .api_utils import send_request, parse_param
 
-#!---------------------  Account Endpoints  ---------------------!#
+#!--------------------------------------  Account Endpoints  ---------------------------------------!#
 
-#TODO 1. Query account data
+#! 1. Query account data
 async def get_balance_perp():
     """
     Retrieves the balance for the USDTM perpetual contract.
@@ -19,7 +19,7 @@ async def get_balance_perp():
     paramsStr = parse_param(paramsMap)
     return send_request(method, path, paramsStr, {})
 
-#TODO 2. Query position data
+#! 2. Query position data
 async def get_positions():
     """
     Fetches the user's positions for USDT-M perpetual futures.
@@ -32,7 +32,7 @@ async def get_positions():
     paramsStr = parse_param(paramsMap)
     return send_request(method, path, paramsStr, {})
 
-#TODO 3. Get Account Profit and Loss Fund Flow
+#! 3. Get Account Profit and Loss Fund Flow
 async def get_income_acc():
     path = '/openApi/swap/v2/user/income'
     method = "GET"
@@ -42,7 +42,7 @@ async def get_income_acc():
     paramsStr = parse_param(paramsMap)
     return send_request(method, path, paramsStr, {})
 
-# TODO 4. Export Fund Flow
+#! 4. Export Fund Flow
 async def export_fund_flow(symbol=None, incomeType=None, startTime=None, endTime=None, limit=200):
     """
     Exports the fund flow of the perpetual account. The response will be an Excel file.
@@ -60,7 +60,7 @@ async def export_fund_flow(symbol=None, incomeType=None, startTime=None, endTime
     paramsStr = parse_param(paramsMap)
     return send_request(method, path, paramsStr, {})
 
-# TODO 5. Query Trading Commission Rate
+#! 5. Query Trading Commission Rate
 async def query_trading_commission_rate():
     """
     Obtains the trading commission rate for the current user.
@@ -73,7 +73,7 @@ async def query_trading_commission_rate():
     paramsStr = parse_param(paramsMap)
     return send_request(method, path, paramsStr, {})
 
-#!---------------------  Trades Endpoints  ---------------------!#
+#TODO -------------------------------------  Trades Endpoints  -------------------------------------------!#
 
 #TODO 1. Test Order
 async def test_order(symbol, side, positionSide, order_type, quantity, price=None, stopPrice=None):
