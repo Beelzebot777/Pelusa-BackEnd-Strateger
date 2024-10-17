@@ -12,7 +12,7 @@ from app.server.middlewares import AllowedIPsMiddleware, InvalidRequestLoggingMi
 from fastapi.middleware.cors import CORSMiddleware
 
 from app.alarms.routes import router as alarms_router
-from app.bingx.routes import router as bingx_router
+from app.bingx.bingx import router as bingx_router
 from app.strateger.strateger import router as strateger_router
 from app.server.routes import router as server_router
 from app.klinedata.routes import router as kline_data_router
