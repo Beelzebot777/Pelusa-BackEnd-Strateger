@@ -1,11 +1,15 @@
 from fastapi import APIRouter, Request, HTTPException
 
-from app.bingx.api.api_usdtm import get_balance_perp_usdtm, get_income_acc, get_all_orders, get_full_all_orders, get_positions_usdtm, make_order_usdtm
+from app.bingx.api.api_usdtm import get_balance_perp, get_income_acc, get_all_orders, get_full_all_orders, get_positions, make_order
 from app.utils.ip_check import is_ip_allowed
 
 from loguru import logger
 
 router = APIRouter()
+
+#!----------------------------------- Account Endpoints -----------------------------------!#
+
+#!------------------------------------ Trades Endpoints -----------------------------------!#
 
 @router.get('/get-all-full-orders')
 async def get_full_all_orders_endpoint(request: Request, limit: int = 500, offset: int = 0):
@@ -58,7 +62,7 @@ async def make_order_usdtm_endpoint(request: Request, leverage: int, symbol: str
     await is_ip_allowed(client_ip)
     
     try:
-        result = await make_order_usdtm(leverage, symbol, side, positionSide, order_type, quantity)
+        result = await make_order(leverage, symbol, side, positionSide, order_type, quantity)
         return result
     except Exception as e:
         logger.error(f"Error making order: {str(e)}")
@@ -99,7 +103,7 @@ async def get_balance_endpoint(request: Request):
     await is_ip_allowed(client_ip)
     
     try:
-        result = await get_balance_perp_usdtm()    
+        result = await get_balance_perp()    
         return result
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
@@ -203,7 +207,7 @@ async def get_positions_endpoint(request: Request):
     await is_ip_allowed(client_ip)
     
     try:
-        result = await get_positions_usdtm()        
+        result = await get_positions()        
         return result
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
