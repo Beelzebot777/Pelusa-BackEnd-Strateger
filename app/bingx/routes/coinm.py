@@ -1,6 +1,6 @@
 # Path: app/bingx/routes/coinm.py
 
-from fastapi import APIRouter, Request
+from fastapi import APIRouter, Request, Body
 
 from app.bingx.controllers.coinm import (
     make_order_coinm_controller,                #TODO 1. Place Order
@@ -26,12 +26,21 @@ router = APIRouter()
 
 #TODO 1. Place Order
 @router.post('/make-order-coinm')
-async def make_order_endpoint(request: Request, leverage: int, symbol: str, side: str, positionSide: str, order_type: str, quantity: float):
+async def make_order_endpoint(
+    request: Request, 
+    leverage: int = Body(...), 
+    symbol: str = Body(...), 
+    side: str = Body(...), 
+    positionSide: str = Body(...), 
+    order_type: str = Body(...), 
+    quantity: int = Body(...)       #IMPORTANT: Quantity is an integer, its the number of items to buy/sell
+):
     """
     Place an order in the Coin-M Perp Futures market.
     """
     client_ip = request.client.host
     return await make_order_coinm_controller(leverage, symbol, side, positionSide, order_type, quantity, client_ip)
+
 
 #TODO 2. Query Commission Rate
 @router.get('/query-commission-rate')
@@ -49,16 +58,21 @@ async def query_leverage_endpoint(request: Request, symbol: str):
     Get the leverage for the current user in Coin-M futures.
     """
     client_ip = request.client.host
-    return await query_leverage_controller(symbol, client_ip)
+    return await query_leverage_controller(client_ip, symbol)
 
 #TODO 4. Modify Leverage
 @router.post('/modify-leverage')
-async def modify_leverage_endpoint(request: Request, symbol: str, side: str, leverage: int):
+async def modify_leverage_endpoint(
+    request: Request, 
+    symbol: str = Body(...), 
+    side: str = Body(...), 
+    leverage: int = Body(...)
+):
     """
     Modify the leverage for the current user in Coin-M futures.
     """
     client_ip = request.client.host
-    return await modify_leverage_controller(symbol, side, leverage, client_ip)
+    return await modify_leverage_controller(client_ip, symbol, side, leverage)
 
 #TODO 5. Cancel All Open Orders
 @router.post('/cancel-all-open-orders')
@@ -105,7 +119,7 @@ async def query_force_orders_endpoint(request: Request, symbol: str, startTime: 
     client_ip = request.client.host
     return await query_force_orders_controller(symbol, startTime, endTime, limit, client_ip)
 
-#TODO 10. Query Historical Orders
+#TODO 10. Query Order Trade Detail
 @router.get('/query-historical-orders')
 async def query_historical_orders_endpoint(request: Request, symbol: str, startTime: int, endTime: int, limit: int):
     """
