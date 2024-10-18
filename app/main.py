@@ -29,13 +29,13 @@ async def lifespan(app: FastAPI):
     try:
         logger.info("Initializing databases...")
         
-        await init_db_alarmas()
-        await init_db_estrategias()       
-        await init_db_diary() 
-        await init_db_positions()
-        await init_db_accounts()
-        await init_db_kline_data()  
-        await init_db_orders()      
+        #await init_db_alarmas()
+        #await init_db_estrategias()       
+        #await init_db_diary() 
+        #await init_db_positions()
+        #await init_db_accounts()
+        #await init_db_kline_data()  
+        #await init_db_orders()      
         logger.info("Databases: OK")
         
 
