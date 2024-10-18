@@ -183,12 +183,6 @@ async def get_old_trades(symbol, limit=100, fromId=None):
     paramsStr = parse_param(paramsMap)
     return send_request(method, path, paramsStr, {})
 
-# Path: app/bingx/api/api_spot_wallet.py
-
-# Description: Wallet deposits and withdrawals functions for BingX exchange
-import time
-from .api_utils import send_request, parse_param
-
 #!--------------------------------------------------------------------------------------------------------------------------!#
 #!--------------------------------------  Wallet Deposits and Withdrawals Endpoints  ---------------------------------------!#
 #!--------------------------------------------------------------------------------------------------------------------------!#
@@ -318,12 +312,6 @@ async def get_deposit_risk_control_records():
     return send_request(method, path, paramsStr, {})
 
 
-# Path: app/bingx/api/api_spot_fund_account.py
-
-# Description: Fund account functions for BingX exchange (query assets, asset transfer, transfer records, etc.)
-import time
-from .api_utils import send_request, parse_param
-
 #!--------------------------------------------------------------------------------------------------------------------!#
 #!----------------------------------------------  Fund Account Endpoints  --------------------------------------------!#
 #!--------------------------------------------------------------------------------------------------------------------!#
@@ -344,7 +332,7 @@ async def get_balance_spot():
 
 
 #TODO 2. Asset Transfer
-async def transfer_asset(asset, amount, transfer_type, recvWindow=None):
+async def transfer_asset(asset, amount, transfer_type):
     """
     Transfers assets within the BingX platform (e.g., from spot to futures).
 
@@ -365,10 +353,6 @@ async def transfer_asset(asset, amount, transfer_type, recvWindow=None):
         "type": transfer_type,
         "timestamp": str(int(time.time() * 1000))
     }
-
-    if recvWindow:
-        paramsMap["recvWindow"] = str(recvWindow)
-
     paramsStr = parse_param(paramsMap)
     return send_request(method, path, paramsStr, {})
 
