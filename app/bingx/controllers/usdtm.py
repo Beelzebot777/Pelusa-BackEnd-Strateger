@@ -350,11 +350,11 @@ async def close_position_by_id_controller(client_ip: str, positionId: str):
         raise HTTPException(status_code=400, detail=str(e))
 
 #TODO 26. All Orders        
-async def get_full_all_orders_controller(client_ip: str, limit: int, offset: int):
+async def get_full_all_orders_controller(client_ip: str, limit: int):
     logger.info(f"Fetching historical orders information from {client_ip}")
     await is_ip_allowed(client_ip)
     try:
-        result = await get_full_all_orders(limit, offset)
+        result = await get_full_all_orders(limit)
         logger.debug(f"result: {result}")
         return result
     except Exception as e:

@@ -472,7 +472,7 @@ async def close_position_by_id(positionId):
     return send_request(method, path, paramsStr, {})
 
 #TODO 26. All Orders
-async def get_full_all_orders(limit: int, offset: int):
+async def get_full_all_orders(limit: int):
     path = '/openApi/swap/v1/trade/fullOrder'
     method = "GET"
     end_time = str(int(time.time() * 1000))

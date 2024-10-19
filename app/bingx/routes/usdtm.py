@@ -208,9 +208,9 @@ async def close_position_by_id_endpoint(request: Request, positionId: str):
 
 #TODO 26. All orders
 @router.get('/get-all-full-orders')
-async def get_full_all_orders_endpoint(request: Request, limit: int = 500, offset: int = 0):
+async def get_full_all_orders_endpoint(request: Request, limit: int = 500):
     client_ip = request.client.host    
-    return await get_full_all_orders_controller(client_ip, limit, offset)
+    return await get_full_all_orders_controller(client_ip, limit)
 
 #TODO 27. Position and maintenance margin ratio
 @router.get('/query-position-margin-ratio')
