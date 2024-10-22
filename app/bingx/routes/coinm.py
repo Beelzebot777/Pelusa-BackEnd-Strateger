@@ -1,6 +1,7 @@
 # Path: app/bingx/routes/coinm.py
 
 from fastapi import APIRouter, Request, Body
+from typing import Optional
 
 from app.bingx.controllers.coinm import (
     make_order_coinm_controller,                #TODO 1. Place Order
@@ -12,11 +13,11 @@ from app.bingx.controllers.coinm import (
     get_positions_perp_coinm_controller,        #TODO 7. Query warehouse
     get_balance_controller,                     #TODO 8. Query Account Assets    
     query_force_orders_controller,              #TODO 9. Query Force Orders
-    query_historical_orders_controller,         #TODO 10. Query Historical Orders
+    query_historical_orders_controller,         #TODO 10. Query Order Trade Detail by Id
     cancel_order_controller,                    #TODO 11. Cancel Order
     query_all_open_orders_controller,           #TODO 12. Query All Open Orders
     query_order_controller,                     #TODO 13. Query Order
-    query_history_orders_controller,            #TODO 14. Query History Orders
+    query_history_orders_controller,            #TODO 14. Query History Orders                 IN: 'Orders'
     query_margin_type_controller,               #TODO 15. Query Margin Type
     set_margin_type_controller,                 #TODO 16. Set Margin Type
     adjust_isolated_position_margin_controller  #TODO 17. Adjust Isolated Position Margin
@@ -112,21 +113,21 @@ async def get_balance_endpoint(request: Request):
 
 #TODO 9. Query Force Orders
 @router.get('/query-force-orders')
-async def query_force_orders_endpoint(request: Request, symbol: str, startTime: int, endTime: int, limit: int):
+async def query_force_orders_endpoint(request: Request, symbol: str, startTime: Optional[int], endTime: int, limit: int):
     """
     Query force orders for the current user in Coin-M futures.
     """
     client_ip = request.client.host
     return await query_force_orders_controller(symbol, startTime, endTime, limit, client_ip)
 
-#TODO 10. Query Order Trade Detail
+#TODO 10. Query Order Trade Detail by Id
 @router.get('/query-historical-orders')
-async def query_historical_orders_endpoint(request: Request, symbol: str, startTime: int, endTime: int, limit: int):
+async def query_historical_orders_endpoint(request: Request, orderId: str, pageIndex: Optional[int], pageSize: Optional[int]):
     """
     Query historical orders for the current user in Coin-M futures.
     """
     client_ip = request.client.host
-    return await query_historical_orders_controller(symbol, startTime, endTime, limit, client_ip)
+    return await query_historical_orders_controller(client_ip, orderId, pageIndex, pageSize)
 
 #TODO 11. Cancel Order
 @router.delete('/cancel-order')
@@ -144,7 +145,7 @@ async def query_all_open_orders_endpoint(request: Request, symbol: str):
     Query all open orders for the current user in Coin-M futures.
     """
     client_ip = request.client.host
-    return await query_all_open_orders_controller(symbol, client_ip)
+    return await query_all_open_orders_controller(client_ip, symbol)
 
 #TODO 13. Query Order
 @router.get('/query-order')
@@ -155,14 +156,22 @@ async def query_order_endpoint(request: Request, orderId: str, symbol: str):
     client_ip = request.client.host
     return await query_order_controller(orderId, symbol, client_ip)
 
-#TODO 14. Query History Orders
+
+# TODO 14. Query History Orders
 @router.get('/query-history-orders')
-async def query_history_orders_endpoint(request: Request, symbol: str, startTime: int, endTime: int, limit: int):
+async def query_history_orders_endpoint(
+    request: Request, 
+    symbol: Optional[str] = None, 
+    orderId: Optional[int] = None, 
+    startTime: Optional[int] = None, 
+    endTime: Optional[int] = None, 
+    limit: int = 500  # Valor predeterminado para `limit`
+):
     """
     Query historical orders for the current user in Coin-M futures.
-    """
+    """    
     client_ip = request.client.host
-    return await query_history_orders_controller(symbol, startTime, endTime, limit, client_ip)
+    return await query_history_orders_controller(client_ip, symbol, orderId, startTime, endTime, limit)
 
 #TODO 15. Query Margin Type
 @router.get('/query-margin-type')

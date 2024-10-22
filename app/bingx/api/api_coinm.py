@@ -134,19 +134,22 @@ async def query_force_orders(symbol=None, startTime=None, endTime=None, limit=10
     return send_request(method, path, paramsStr, {})
 
 #TODO 10. Query Order Trade Detail
-async def query_historical_orders(symbol, startTime, endTime, limit=100):
+async def query_historical_orders(orderId, pageIndex=None, pageSize=None):
     """
     Queries historical transaction orders for a specific symbol in Coin-M futures.
     """
     path = '/openApi/cswap/v1/trade/allFillOrders'
     method = "GET"
     paramsMap = {
-        "symbol": symbol,
-        "startTime": startTime,
-        "endTime": endTime,
-        "limit": str(limit),
+        "orderId": orderId,
         "timestamp": str(int(time.time() * 1000))
     }
+
+    if pageIndex:
+        paramsMap["pageIndex"] = str(pageIndex)
+    if pageSize:
+        paramsMap["pageSize"] = str(pageSize)
+
     paramsStr = parse_param(paramsMap)
     return send_request(method, path, paramsStr, {})
 
@@ -166,7 +169,7 @@ async def cancel_order(orderId, symbol):
     return send_request(method, path, paramsStr, {})
 
 #TODO 12. Query all current pending orders
-async def query_all_open_orders(symbol):
+async def query_all_open_orders(symbol=None):
     """
     Queries all open orders for a specific symbol in Coin-M futures.
     """
@@ -176,6 +179,9 @@ async def query_all_open_orders(symbol):
         "symbol": symbol,
         "timestamp": str(int(time.time() * 1000))
     }
+
+
+
     paramsStr = parse_param(paramsMap)
     return send_request(method, path, paramsStr, {})
 
@@ -195,19 +201,26 @@ async def query_order(orderId, symbol):
     return send_request(method, path, paramsStr, {})
 
 #TODO 14. Query User's History Orders
-async def query_history_orders(symbol, startTime, endTime, limit=500):
+async def query_history_orders(symbol: str, orderId: int, startTime: int, endTime: int, limit: int):
     """
     Queries the user's historical orders in Coin-M futures.
     """
     path = '/openApi/cswap/v1/trade/orderHistory'
     method = "GET"
     paramsMap = {
-        "symbol": symbol,
-        "startTime": startTime,
-        "endTime": endTime,
         "limit": str(limit),
         "timestamp": str(int(time.time() * 1000))
     }
+
+    if symbol:
+        paramsMap["symbol"] = symbol
+    if orderId:
+        paramsMap["orderId"] = str(orderId)
+    if startTime:
+        paramsMap["startTime"] = str(startTime)
+    if endTime:
+        paramsMap["endTime"] = str(endTime)    
+
     paramsStr = parse_param(paramsMap)
     return send_request(method, path, paramsStr, {})
 

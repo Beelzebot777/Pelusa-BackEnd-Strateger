@@ -10,7 +10,7 @@ from app.bingx.api.api_coinm import (
     get_positions_perp_coinm,       #TODO 7. Query warehouse
     get_balance_perp_coinm,         #TODO 8. Query Account Assets
     query_force_orders,             #TODO 9. Query Force Orders
-    query_historical_orders,        #TODO 10. Query Historical Orders
+    query_historical_orders,        #TODO 10. Query Order Trade Detail by Id
     cancel_order,                   #TODO 11. Cancel Order
     query_all_open_orders,          #TODO 12. Query All Open Orders
     query_order,                    #TODO 13. Query Order
@@ -186,7 +186,7 @@ async def query_force_orders_controller(client_ip: str, symbol: str, startTime: 
         raise HTTPException(status_code=400, detail=str(e))
 
 #TODO 10. Query Order Trade Detail
-async def query_historical_orders_controller(client_ip: str, symbol: str, startTime: int, endTime: int, limit: int):
+async def query_historical_orders_controller(client_ip: str, orderId: str, pageIndex: int, pageSize: int):
     """
     Get historical transaction orders for a specific symbol in Coin-M futures.
     """
@@ -197,7 +197,7 @@ async def query_historical_orders_controller(client_ip: str, symbol: str, startT
     await is_ip_allowed(client_ip)
     
     try:
-        result = await query_historical_orders(symbol, startTime, endTime, limit)
+        result = await query_historical_orders(orderId, pageIndex, pageSize)
         return result
     except Exception as e:
         logger.error(f"Error fetching historical orders: {str(e)}")
@@ -258,7 +258,7 @@ async def query_order_controller(client_ip: str, symbol: str, orderId: str):
         raise HTTPException(status_code=400, detail=str(e))
 
 #TODO 14. Query History Orders
-async def query_history_orders_controller(client_ip: str, symbol: str, startTime: int, endTime: int, limit: int):
+async def query_history_orders_controller(client_ip: str, symbol: str, orderId: int, startTime: int, endTime: int, limit: int):
     """
     Get the user's historical orders in Coin-M futures.
     """
@@ -269,7 +269,7 @@ async def query_history_orders_controller(client_ip: str, symbol: str, startTime
     await is_ip_allowed(client_ip)
     
     try:
-        result = await query_history_orders(symbol, startTime, endTime, limit)
+        result = await query_history_orders(symbol, orderId, startTime, endTime, limit)
         return result
     except Exception as e:
         logger.error(f"Error fetching history orders: {str(e)}")
