@@ -1,4 +1,5 @@
 from fastapi import APIRouter, Request
+from typing import Optional
 
 from app.bingx.controllers.standard import (
     query_all_positions_controller,                 #TODO 1. Query All Positions
@@ -19,7 +20,14 @@ async def query_all_positions_endpoint(request: Request):
 
 #TODO 2. Query Historical Orders
 @router.get('/query-historical-orders')
-async def query_historical_orders_endpoint(request: Request, symbol: str, orderId: int = None, startTime: int = None, endTime: int = None, limit: int = 100):
+async def query_historical_orders_endpoint(
+    request: Request, 
+    symbol: str = 'BTC-USDT', 
+    orderId: Optional[int] = None, 
+    startTime: Optional[int] = None, 
+    endTime: Optional[int]= None, 
+    limit: Optional[int] = None
+):
     """
     Queries historical orders for a specific symbol in standard contracts.
     """

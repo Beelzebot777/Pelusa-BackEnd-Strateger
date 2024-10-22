@@ -21,17 +21,16 @@ async def query_all_positions():
 
 
 #TODO 2. Query Historical Orders
-async def query_historical_orders(symbol, orderId=None, startTime=None, endTime=None, limit=100):
+async def query_historical_orders(symbol="BTC-USDT", orderId=None, startTime=None, endTime=None, limit=100):
     """
     Queries historical orders for a specific symbol in standard contracts.
     """
     path = '/openApi/contract/v1/allOrders'
     method = "GET"
-    paramsMap = {
-        "symbol": symbol,
+    paramsMap = {   
+        "symbol": symbol,    
         "timestamp": str(int(time.time() * 1000))
-    }
-    
+    }    
     if orderId:
         paramsMap["orderId"] = orderId
     if startTime:

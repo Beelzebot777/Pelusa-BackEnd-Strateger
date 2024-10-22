@@ -361,10 +361,20 @@ async def get_open_orders_controller(client_ip: str, symbol: str):
         raise HTTPException(status_code=400, detail=str(e))
     
 #TODO 9. Query Order History
-async def get_order_history_controller(client_ip: str, symbol: str, startTime: int, endTime: int, pageIndex: int = 1, pageSize: int = 100):
+async def get_order_history_controller(
+    client_ip: str,
+    symbol: str = None,
+    startTime: int = None,
+    endTime: int = None,
+    pageIndex: int = None,
+    pageSize: int = None,
+    orderId: int = None,
+    status: str = None,
+    type: str = None,
+):
     logger.info(f"Fetching order history for {symbol} from {client_ip}")
     try:
-        result = await get_order_history(symbol, startTime, endTime, pageIndex, pageSize)
+        result = await get_order_history(symbol, startTime, endTime, pageIndex, pageSize, orderId, status, type)
         return result
     except Exception as e:
         logger.error(f"Error fetching order history: {str(e)}")

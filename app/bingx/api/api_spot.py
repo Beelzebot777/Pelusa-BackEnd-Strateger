@@ -623,23 +623,41 @@ async def get_open_orders(symbol=None):
 
 
 #TODO 9. Query Order history
-async def get_order_history(symbol, startTime=None, endTime=None, pageIndex=1, pageSize=100):
+async def get_order_history(
+    symbol: str = None,
+    startTime: int = None,
+    endTime: int = None,
+    pageIndex: int = None,
+    pageSize: int = None,
+    orderId: int = None,
+    status: str = None,
+    type: str = None,
+):
     """
     Retrieves the history of orders for a specific symbol.
     """
     path = '/openApi/spot/v1/trade/historyOrders'
     method = "GET"
-    paramsMap = {
-        "symbol": symbol,
-        "pageIndex": str(pageIndex),
-        "pageSize": str(pageSize),
+    paramsMap = {    
         "timestamp": str(int(time.time() * 1000))
     }
 
+    if symbol:
+        paramsMap["symbol"] = symbol
     if startTime:
         paramsMap["startTime"] = str(startTime)
     if endTime:
         paramsMap["endTime"] = str(endTime)
+    if pageIndex:
+        paramsMap["pageIndex"] = str(pageIndex)
+    if pageSize:
+        paramsMap["pageSize"] = str(pageSize)
+    if orderId:
+        paramsMap["orderId"] = str(orderId)
+    if status:
+        paramsMap["status"] = status
+    if type:
+        paramsMap["type"] = type
 
     paramsStr = parse_param(paramsMap)
     return send_request(method, path, paramsStr, {})

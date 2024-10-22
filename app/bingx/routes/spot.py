@@ -1,6 +1,7 @@
 #Path: app/bingx/routes/spot.py
 
 from fastapi import APIRouter, Request
+from typing import Optional
 from app.utils.ip_check import is_ip_allowed
 from app.bingx.controllers.spot import (
     #!------------------------------------------ Spot Market Data Endpoints ------------------------------------------!#
@@ -273,10 +274,20 @@ async def get_open_orders_endpoint(request: Request, symbol: str):
 
 #TODO 9. Query Order History
 @router.get('/get-order-history')
-async def get_order_history_endpoint(request: Request, symbol: str, startTime: int, endTime: int, pageIndex: int = 1, pageSize: int = 100):
+async def get_order_history_endpoint(
+    request: Request, 
+    symbol: Optional[str] = None, 
+    startTime: Optional[int] = None, 
+    endTime: Optional[int] = None, 
+    pageIndex: Optional[int] = None, 
+    pageSize: Optional[int] = None, 
+    orderId: Optional[int] = None, 
+    status: Optional[str] = None, 
+    type: Optional[str] = None
+):
     client_ip = request.client.host
     await is_ip_allowed(client_ip)
-    return await get_order_history_controller(client_ip, symbol, startTime, endTime, pageIndex, pageSize)
+    return await get_order_history_controller(client_ip, symbol, startTime, endTime, pageIndex, pageSize, orderId, status, type)
 
 #TODO 10. Query Transaction Details
 @router.get('/get-transaction-details')

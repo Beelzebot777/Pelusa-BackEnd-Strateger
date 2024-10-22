@@ -29,7 +29,13 @@ async def query_all_positions_controller(client_ip: str):
         raise HTTPException(status_code=400, detail=str(e))
 
 #TODO 2. Query Historical Orders
-async def query_historical_orders_controller(client_ip: str, symbol: str, orderId: int = None, startTime: int = None, endTime: int = None, limit: int = 100):
+async def query_historical_orders_controller(
+    client_ip: str, 
+    symbol: str = 'BTC-USDT', 
+    orderId: int = None, 
+    startTime: int = None, 
+    endTime: int = None, 
+    limit: int = None):
     """
     Queries historical orders for a specific symbol in standard contracts.
     """
