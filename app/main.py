@@ -97,3 +97,6 @@ app.include_router(bingx_router, prefix="/bingx", tags=["bingx"])
 app.include_router(strateger_router, prefix="/strateger", tags=["strateger"])
 app.include_router(server_router, prefix="/server", tags=["server"])
 app.include_router(kline_data_router, prefix="/klinedata", tags=["kline_data"])
+
+
+app.mount("/statics/images", StaticFiles(directory="app/strateger/uploads/diary"), name="images")
