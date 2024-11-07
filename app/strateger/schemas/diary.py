@@ -5,6 +5,7 @@ from datetime import datetime
 
 class DiaryEntryBase(BaseModel):
     date: datetime
+    titleName: str
     text: str
     photos: Optional[List[str]] = []
     references: Optional[List[str]] = []

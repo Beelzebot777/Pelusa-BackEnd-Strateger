@@ -15,6 +15,7 @@ async def get_diary_entries(db: AsyncSession, skip: int = 0, limit: int = 10):
 async def crud_create_diary_entry(db: AsyncSession, entry: DiaryEntryCreate):
     db_entry = DiaryEntry(
         id=str(uuid.uuid4()),
+        titleName=entry.titleName,
         date=entry.date,
         text=entry.text,
         photos=entry.photos,
