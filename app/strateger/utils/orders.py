@@ -5,7 +5,7 @@ from app.bingx.services.api_coinm import make_order_coinm, close_all_positions_c
 from loguru import logger
 from sqlalchemy.ext.asyncio import AsyncSession
 from app.strateger.crud.strategies import get_strategy_by_name_and_ticker
-from app.alarms.crud import get_latest_alarm_with_entry
+from app.alarms.repositories import get_latest_alarm_with_entry
 from app.strateger.models.strategies import Strategy
 
 async def crear_operacion(variables: dict, db_alarmas: AsyncSession, db_estrategias: AsyncSession):
