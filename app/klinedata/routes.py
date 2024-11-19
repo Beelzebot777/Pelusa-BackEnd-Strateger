@@ -3,11 +3,11 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from typing import List
 from app.siteground.database import get_db_kline_data
 from app.klinedata.schemas import KlineDataCreate, Interval
-from app.klinedata.crud import save_kline_data, get_kline_data
+from app.klinedata.services import save_kline_data, get_kline_data
 from app.utils.ip_check import is_ip_allowed
 from loguru import logger
 
-from app.bingx.api.api_main import get_k_line_data
+from app.bingx.services.api_main import get_k_line_data
 from datetime import datetime, timedelta
 
 from typing import List, Dict, Any

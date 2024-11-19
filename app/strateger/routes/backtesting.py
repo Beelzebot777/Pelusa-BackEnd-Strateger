@@ -6,7 +6,7 @@ from app.siteground.database import get_db_estrategias
 from app.strateger.schemas.backtesting import BacktestCreate, BacktestUpdate, Backtest
 from app.strateger.crud import backtesting as crud_backtesting
 from app.klinedata.schemas import Interval
-from app.klinedata.crud import get_kline_data
+from app.klinedata.services import get_kline_data
 from app.siteground.database import get_db_kline_data
 from loguru import logger
 
