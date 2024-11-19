@@ -1,7 +1,7 @@
 #Path: app/bingx/controllers/usdtm.py
 
 from fastapi import HTTPException
-from app.bingx.api.api_usdtm import (
+from app.bingx.services.api_usdtm import (
     get_balance_perp,                       #! 1. Query account data
     get_positions,                          #! 2. Query position data
     get_income_acc,                         #! 3. Get Account Profit and Loss Fund Flow

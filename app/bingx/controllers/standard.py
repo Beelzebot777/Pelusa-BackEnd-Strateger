@@ -4,7 +4,7 @@ from app.utils.ip_check import is_ip_allowed
 from fastapi import HTTPException
 from loguru import logger
 
-from app.bingx.api.api_standard import (
+from app.bingx.services.api_standard import (
     query_all_positions,                #TODO 1. Query All Positions
     query_historical_orders,            #TODO 2. Query Historical Orders
     query_standard_contract_balance      #TODO 3. Query Standard Contract Balance

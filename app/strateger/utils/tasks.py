@@ -1,8 +1,8 @@
 # Path: app/strateger/utils/tasks.py
 import asyncio
-from app.bingx.api.api_usdtm import get_positions as get_positions_usdtm, get_balance_perp as get_balance_perp_usdtm
-from app.bingx.api.api_coinm import get_positions_perp_coinm, get_balance_perp_coinm
-from app.bingx.api.api_spot import get_balance_spot
+from app.bingx.services.api_usdtm import get_positions as get_positions_usdtm, get_balance_perp as get_balance_perp_usdtm
+from app.bingx.services.api_coinm import get_positions_perp_coinm, get_balance_perp_coinm
+from app.bingx.services.api_spot import get_balance_spot
 from app.siteground.database import get_db_positions, get_db_accounts
 from app.strateger.models.positions import Position
 from app.strateger.models.accounts import Account

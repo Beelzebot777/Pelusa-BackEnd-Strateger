@@ -1,7 +1,7 @@
 #Path: app/bingx/controllers/spot_controller.py
 
 from fastapi import HTTPException
-from app.bingx.api.api_spot import (
+from app.bingx.services.api_spot import (
 
     #!------------------------------------------ Spot Market Data Endpoints ------------------------------------------!#
     get_spot_symbols,                           #TODO 1. Query Symbols

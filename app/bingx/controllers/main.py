@@ -1,7 +1,7 @@
 #Path: app/bingx/controllers/main_controller.py
 
 from fastapi import HTTPException
-from app.bingx.api.api_main import get_ticker, get_k_line_data
+from app.bingx.services.api_main import get_ticker, get_k_line_data
 from app.utils.ip_check import is_ip_allowed
 from loguru import logger
 

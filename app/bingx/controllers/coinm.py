@@ -1,6 +1,6 @@
 # Path: app/bingx/controllers/coinm_controller.py
 
-from app.bingx.api.api_coinm import (
+from app.bingx.services.api_coinm import (
     make_order_coinm,               #TODO 1. Place Order
     query_commission_rate,          #TODO 2. Query Commission Rate
     query_leverage,                 #TODO 3. Query Leverage
